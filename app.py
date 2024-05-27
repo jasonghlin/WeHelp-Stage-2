@@ -1,6 +1,6 @@
 from fastapi import *
 from fastapi.responses import FileResponse
-app=fastapi()
+app = FastAPI()
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -15,3 +15,4 @@ async def booking(request: Request):
 @app.get("/thankyou", include_in_schema=False)
 async def thankyou(request: Request):
 	return FileResponse("./static/thankyou.html", media_type="text/html")
+# -----------------------------------------------
