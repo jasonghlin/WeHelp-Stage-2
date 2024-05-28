@@ -47,10 +47,12 @@ def get_db_attractions(page, keyword=None):
             db.execute(attraction_query, val_1)
             db.fetchall()
             row_count = db.rowcount
+            print(row_count)
         else:
             db.execute(attraction_query)
             db.fetchall()
             row_count = db.rowcount
+            print(row_count)
         offset = page * 12
         attraction_query += "LIMIT 12 OFFSET %s"
         if keyword:
@@ -58,7 +60,7 @@ def get_db_attractions(page, keyword=None):
         else:
             val = (offset, )
         db.execute(attraction_query, val)
-        if page * 12 >= row_count:
+        if (page + 1) * 12 >= row_count:
             return {"data": db.fetchall(), "lastPage": True}
         else:
             return {"data": db.fetchall(), "lastPage": False}
