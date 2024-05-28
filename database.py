@@ -9,7 +9,7 @@ mysql_password = os.environ.get("MYSQL")
 def get_db_connection():
     try:
        dbconfig = {
-        "user": "root",
+        "user": "newuser",
         "password": mysql_password,
         "host": "localhost",
         "database": "taipei_day_trip"
