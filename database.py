@@ -27,8 +27,8 @@ def get_db_connection():
     return cnx
 
 def get_db_attractions(page, keyword=None):
-    db_connection = get_db_connection()
     try:
+        db_connection = get_db_connection()
         db = db_connection.cursor(dictionary = True)
         attraction_query = (
             # """
@@ -49,18 +49,48 @@ def get_db_attractions(page, keyword=None):
             val = (f"%{keyword}%", f"%{keyword}%", offset)
         else:
             val = (offset, )
-        print(attraction_query, offset)
         db.execute(attraction_query, val)
         return db.fetchall()
     except Exception as e:
-        logging.error("Error when fetching user info: %s", e, exc_info=True)
+        logging.error("Error when fetching attractions info: %s", e, exc_info=True)
         return {}
     finally:
         db.close()
         db_connection.close()
 
 
+def get_db_attraction_by_id(attraction_id):
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        attraction_query = (
+            """
+                SELECT attractions.id, name, CAT AS category, description, address, direction AS transport, MRT AS mrt, latitude AS lat, longitude AS lng, images
+                FROM attractions
+                WHERE attractions.id = %s
+            """
+        )
+        val = (attraction_id, )
+        db.execute(attraction_query, val)
+        return db.fetchone()
+    except Exception as e:
+        logging.error("Error when fetching attractions info: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
 
 
-
-# SELECT attractions.id, name, CAT AS category, description, address, direction AS transport, MRT AS mrt, latitude AS lat, longitude AS lng, image_url AS images FROM attractions INNER JOIN attraction_images ON attractions.id = attraction_images.attraction_id WHERE name like "%北%" OR mrt like "%北%";
+def get_db_mrts():
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        mrts_query = ("SELECT MRT as mrt, COUNT(*) FROM attractions GROUP BY mrt ORDER BY COUNT(*) DESC")
+        db.execute(mrts_query)
+        return db.fetchall()
+    except Exception as e:
+        logging.error("Error when fetching attractions info: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
