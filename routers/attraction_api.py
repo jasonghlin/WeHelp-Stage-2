@@ -23,7 +23,7 @@ class Attraction(BaseModel):
 	images: List[str]
 
 class AttractionResponse(BaseModel):
-	nextPage: int
+	nextPage: int | None
 	data: List[Attraction]
 
 class ErrorResponse(BaseModel):
@@ -37,7 +37,6 @@ class AttractionByIdResponse(BaseModel):
 
 @router.get("/api/attractions", response_model=AttractionResponse, status_code=status.HTTP_200_OK, summary="取得景點資料列表", description="取得不同分頁的旅遊景點列表資料，也可以根據標題關鍵字、或捷運站名稱篩選")
 async def get_attractions( keyword: str | None = None, page: int = Query(ge=0)):
-	print(type(page))
 	results = get_db_attractions(page, keyword)
 	# row_count = len(results) 
 	# print(results)
@@ -56,7 +55,11 @@ async def get_attractions( keyword: str | None = None, page: int = Query(ge=0)):
 			images = json.loads(row["images"])
 		)
 		attractions.append(attraction)
-	next_page = page + 1
+	print(len(attractions))
+	if len(attractions) <= 12:
+		next_page = None
+	else:
+		next_page = page + 1
 	return AttractionResponse(nextPage=next_page, data=attractions)
 	
 
