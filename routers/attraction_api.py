@@ -43,7 +43,6 @@ async def get_attractions( keyword: str | None = None, page: int = Query(ge=0)):
 	# print(results)
 	attractions = []
 	for row in results:
-		id = row["id"]
 		attraction = Attraction(
 			id = row["id"],
 			name =  row["name"],
