@@ -9,7 +9,7 @@ mysql_password = os.environ.get("MYSQL")
 def get_db_connection():
     try:
        dbconfig = {
-        "user": "root",
+        "user": "newuser",
         "password": mysql_password,
         "host": "localhost",
         "database": "taipei_day_trip"
@@ -38,11 +38,21 @@ def get_db_attractions(page, keyword=None):
             # """
             """
                SELECT attractions.id, name, CAT AS category, description, address, direction AS transport, MRT AS mrt, latitude AS lat, longitude AS lng, images
-               FROM attractions               
+               FROM attractions          
             """
             )
         if keyword:
             attraction_query += "WHERE name like %s OR mrt like %s"
+            val_1 = (f"%{keyword}%", f"%{keyword}%")
+            db.execute(attraction_query, val_1)
+            db.fetchall()
+            row_count = db.rowcount
+            print(row_count)
+        else:
+            db.execute(attraction_query)
+            db.fetchall()
+            row_count = db.rowcount
+            print(row_count)
         offset = page * 12
         attraction_query += "LIMIT 12 OFFSET %s"
         if keyword:
@@ -50,7 +60,10 @@ def get_db_attractions(page, keyword=None):
         else:
             val = (offset, )
         db.execute(attraction_query, val)
-        return db.fetchall()
+        if (page + 1) * 12 >= row_count:
+            return {"data": db.fetchall(), "lastPage": True}
+        else:
+            return {"data": db.fetchall(), "lastPage": False}
     except Exception as e:
         logging.error("Error when fetching attractions info: %s", e, exc_info=True)
         return {}
