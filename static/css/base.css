@@ -1,0 +1,189 @@
+html {
+    font-size: 62.5%;
+}
+
+body {
+    box-sizing: border-box;
+    /* font-family: 'Alegreya', serif; */
+    font-size: 2rem;
+    font-family: Noto Sans TC, Sans-Serif ;
+
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.logo {
+    font-weight: 700;
+    color: #448899;
+}
+
+nav {
+    width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto
+}
+
+.logo {
+    font-weight: 700;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu > li {
+    list-style: none;
+    margin-left: 2rem;
+    cursor: pointer;
+    color: #666;
+    padding: 1rem;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    z-index: 5;
+   
+}
+
+
+
+/* login-form */
+.modal-container, .modal-container{
+    position: relative;
+    width: 34rem;
+    margin: 10rem auto auto auto;
+    z-index: 10;
+    
+}
+
+.gradient-bar{
+    background: linear-gradient(270deg, #378 0%, #6AB 100%);
+    z-index: 10;
+    /* width: 100%; */
+    height: 1rem;
+    border-radius: .6rem .6rem 0 0;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 0 0 .6rem .6rem;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.form-exit {
+    position: absolute;
+    top: .5rem;
+    right: 2rem;
+    cursor: pointer;
+}
+
+.form-input{
+    height: 4rem;
+    width: 100%;
+    border-radius: .5rem;
+    padding: .5rem;
+    margin: .5rem 0 .5rem 0;
+    border: 1px solid #ccc;
+}
+
+.login-form > button{
+    width: 100%;
+    font-size: 2rem;
+    margin: 0.5rem 0 0.5rem 0;
+    background-color: #448899;
+    color: white;
+    border: none;
+    border-radius: .6rem;
+    padding: .7rem;
+    cursor: pointer;
+}
+
+.to-register-wrapper{
+    display: flex;
+}
+
+.to-register-wrapper > div {
+    font-size: 1.6rem;
+}
+
+.to-register-link {
+    cursor: pointer;
+    margin-left: .5rem;
+}
+
+.to-register-link:hover {
+    color: #448899
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 0 0 .6rem .6rem;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.register-form > button{
+    width: 100%;
+    font-size: 2rem;
+    margin: 0.5rem 0 0.5rem 0;
+    background-color: #448899;
+    color: white;
+    border: none;
+    border-radius: .6rem;
+    padding: .7rem;
+    cursor: pointer;
+}
+
+.to-login-wrapper{
+    display: flex;
+}
+
+.to-login-wrapper > div {
+    font-size: 1.6rem;
+}
+
+.to-login-link {
+    cursor: pointer;
+    margin-left: .5rem;
+}
+
+.to-login-link:hover {
+    color: #448899
+}
+
+.hidden {
+    display: none;
+}
+
+footer {
+    width: 100%;
+    height:10.4rem;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ccc;
+}

@@ -1,11 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Index</title>
+  <title>台北一日遊-首頁</title>
+  <link rel="stylesheet" href="/static/css/index.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    crossorigin="anonymous">
 </head>
+
 <body>
-  
+  <header>
+    <nav>
+      <h2 class="logo">台北一日遊</h2>
+      <ul class="menu">
+        <li>預留行程</li>
+        <li>登入/註冊</li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="overlay hidden"></div>
+  <div class="modal-container hidden">
+    <div class="modal-content">
+      <!-- 登入表單 -->
+      <div class="login-container hidden">
+        <div class="gradient-bar"></div>
+        <form action="" class="login-form">
+          <div class="login-form-exit form-exit">
+            <img src="/static/images/form-delete.png" alt="from-exit">
+          </div>
+          <h3>登入會員帳號</h3>
+          <input id="login-email" class="form-input" type="email" placeholder="輸入電子信箱" required>
+          <input id="login-password" class="form-input" type="password" placeholder="輸入密碼" required>
+          <button>登入帳戶</button>
+          <div class="to-register-wrapper">
+            <div>還沒有帳戶? </div>
+            <div class="to-register-link">點此註冊</div>
+          </div>
+        </form>
+      </div>
+      <!-- 註冊表單 -->
+      <div class="register-container hidden">
+        <div class="gradient-bar"></div>
+        <form action="/api/user" class="register-form" method="POST">
+          <div class="register-form-exit form-exit">
+            <img src="/static/images/form-delete.png" alt="from-exit">
+          </div>
+          <h3>註冊會員帳號</h3>
+          <input id="register-name" class="form-input" type="text" placeholder="姓名" name="register-name" required>
+          <input id="register-email" class="form-input" type="email" placeholder="電子郵件" name="register-email" required>
+          <input id="register-password" class="form-input" type="password" placeholder="密碼" name="register-password"
+            required>
+          <button>註冊新帳戶</button>
+          <div class="to-login-wrapper">
+            <div>已經有帳戶了? </div>
+            <div class="to-login-link">登入</div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- hero -->
+  <div class="banner">
+    <div class="banner-search-container">
+      <h1 class="banner-title">輕鬆享受台北一日悠閒</h1>
+      <p>探索每個角落，體驗城市的深度旅遊行程</p>
+      <div class="search-wrapper">
+        <input type="text" placeholder="請輸入景點名稱查詢">
+        <button><i class="fas fa-search"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-attraction">
+    <!-- 放入 scroll bar -->
+  </div>
+
+  <ul class="attractions-container">
+    <!-- 基本單位 -->
+    <!-- <li class="attraction-wrapper">
+        <div class="attraction">
+            <div class="attraction-figure">
+                <div class="image-wrapper">
+                    <img src="https://picsum.photos/300" alt="" class="attraction-img">
+                </div>
+                <div class="attraction-title">
+                    <p>Attraction title</p>
+                </div>
+            </div>
+            <div class="attraction-info">
+                <div class="attraction-category">Category</div>
+                <div class="attraction-mrt">MRT</div>
+            </div>
+        </div>
+    </li> 
+    -->
+
+
+  </ul>
+
+  <footer></footer>
+  <script type="module" src="/static/js/index.js"></script>
 </body>
+
 </html>

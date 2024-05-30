@@ -107,3 +107,47 @@ def get_db_mrts():
     finally:
         db.close()
         db_connection.close()
+
+# create user table if not exist
+def create_users_table():
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        db.execute("USE taipei_day_trip")
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS users(
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(50) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            password VARCHAR(255) NOT NULL
+        )
+    """
+        db.execute(create_table_query)
+    except Exception as e:
+        logging.error("Error when creating user table: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+create_users_table()
+
+def check_db_user(User):
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        user_query = ("SELECT * FROM users WHERE email = %s")
+        val = (User.email, )
+        db.execute(user_query, val)
+        return db.fetchone()
+    except Exception as e:
+        logging.error("Error when fetching user info: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+
+def create_db_user(User):
+    db_connection = get_db_connection()
+    db = db_connection.cursor(dictionary = True)

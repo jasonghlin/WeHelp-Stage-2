@@ -17,7 +17,7 @@ class Attraction(BaseModel):
 	description: str
 	address: str
 	transport: str
-	mrt: str
+	mrt: str | None
 	lat: float
 	lng: float
 	images: List[str]
@@ -50,7 +50,7 @@ async def get_attractions( keyword: str | None = None, page: int = Query(ge=0)):
 			description = row["description"],
 			address = row["address"],
 			transport = row["transport"],
-			mrt = row["mrt"],
+			mrt = row.get("mrt", None),
 			lat = row["lat"],
 			lng = row["lng"],
 			images = json.loads(row["images"])
@@ -79,7 +79,7 @@ async def get_attraction_by_id(attractionId: int):
 				description = result["description"],
 				address = result["address"],
 				transport = result["transport"],
-				mrt = result["mrt"],
+				mrt = result.get("mrt", None),
 				lat = result["lat"],
 				lng = result["lng"],
 				images = json.loads(result["images"])

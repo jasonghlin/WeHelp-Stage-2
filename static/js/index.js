@@ -1,0 +1,268 @@
+const login = document.querySelector(".menu:nth-child(2)");
+const modalContainer = document.querySelector(".modal-container");
+const loginForm = document.querySelector(".login-container");
+const registerForm = document.querySelector(".register-container");
+const loginExit = document.querySelector(".login-form-exit");
+const registerExit = document.querySelector(".register-form-exit");
+const overlay = document.querySelector(".overlay");
+const formExit = document.querySelectorAll(".form-exit");
+const toRegisterLink = document.querySelector(".to-register-link");
+const toLoginLink = document.querySelector(".to-login-link");
+const footer = document.querySelector("footer");
+
+login.addEventListener("click", () => {
+  overlay.classList.remove("hidden");
+  // gradientBar.classList.remove("hidden");
+  loginForm.classList.remove("hidden");
+  modalContainer.classList.remove("hidden");
+});
+
+toRegisterLink.addEventListener("click", () => {
+  loginForm.classList.add("hidden");
+  registerForm.classList.remove("hidden");
+});
+
+toLoginLink.addEventListener("click", () => {
+  loginForm.classList.remove("hidden");
+  registerForm.classList.add("hidden");
+});
+
+formExit.forEach((el) => {
+  el.addEventListener("click", () => {
+    overlay.classList.add("hidden");
+    // gradientBar.classList.add("hidden");
+    loginForm.classList.add("hidden");
+    registerForm.classList.add("hidden");
+    modalContainer.classList.add("hidden");
+  });
+});
+
+footer.textContent = `COPYRIGHT \u00A9 ${new Date().getFullYear()} 台北一日遊`;
+
+// main
+
+function createElementWithClass(element, className) {
+  let container = document.createElement(element);
+  container.className = className;
+  return container;
+}
+
+async function fetchMRT() {
+  const response = await fetch("/api/mrts");
+  if (response.ok) {
+    const data = await response.json();
+    return data.data;
+  } else {
+    console.log("error on fetching mtrs");
+  }
+}
+
+// scroll mrt list bar
+async function listBar() {
+  const mrts = await fetchMRT();
+
+  let root_scrollAttraction = document.querySelector(".scroll-attraction");
+
+  let prevBtn = createElementWithClass("div", "scroll-btn prev-btn");
+  let prevBtnImage = createElementWithClass("img", "prev-btn-img");
+  prevBtnImage.src = "../static/images/buttons/arrow-left-default.png";
+  prevBtn.appendChild(prevBtnImage);
+
+  let nextBtn = createElementWithClass("div", "scroll-btn next-btn");
+  let nextBtnImage = createElementWithClass("img", "next-btn-img");
+  nextBtnImage.src = "../static/images/buttons/arrow-right-default.png";
+  nextBtn.appendChild(nextBtnImage);
+
+  let mrtList = createElementWithClass("div", "mrt-list");
+  mrts.forEach((mrt) => {
+    let listItem = createElementWithClass("button", "list-item");
+    listItem.textContent = mrt;
+    mrtList.appendChild(listItem);
+  });
+  root_scrollAttraction.appendChild(prevBtn);
+  root_scrollAttraction.appendChild(mrtList);
+  root_scrollAttraction.appendChild(nextBtn);
+
+  document.querySelector(".prev-btn").addEventListener("click", function () {
+    const mrtList = document.querySelector(".mrt-list");
+    // 每次點擊滾動左移 100px
+    mrtList.scrollLeft -= 100;
+  });
+
+  document.querySelector(".next-btn").addEventListener("click", function () {
+    const mrtList = document.querySelector(".mrt-list");
+    // 每次點擊滾動右移 100px
+    mrtList.scrollLeft += 100;
+  });
+
+  // add event listner on scroll list
+  const scrollMrtList = document.querySelectorAll(".list-item");
+  const searchInput = document.querySelector(".search-wrapper > input");
+  const searchBtn = document.querySelector(".search-wrapper > button");
+  scrollMrtList.forEach((mrt) => {
+    mrt.addEventListener("click", () => {
+      searchInput.value = mrt.textContent;
+      searchBtn.click();
+    });
+  });
+}
+
+listBar();
+
+function goToAttraction(attractionId) {
+  window.location = `/attraction/${attractionId}`;
+}
+
+// create attraction element
+function createAttractionElement(data, imgIndex) {
+  let attractionWrapper = createElementWithClass("li", "attraction-wrapper");
+  let attraction = createElementWithClass(
+    "div",
+    `attraction attraction-${imgIndex}`
+  );
+
+  let attractionFigure = createElementWithClass("div", "attraction-figure");
+  let attractionImgWrapper = createElementWithClass("div", "image-wrapper");
+  let attractionImg = createElementWithClass("img", "attraction-img");
+  attractionImg.src = "./static/images/loading.gif";
+  attractionImg.dataset.src = `https://${data.images[0]}`;
+
+  attractionImg.onerror = function () {
+    this.onerror = null; // 避免無窮迴圈
+    this.alt = "目前無圖片可顯示";
+    this.style.textAlign = "center";
+    this.style.lineHeight = this.height + "px"; // 設置行高使文字垂直置中
+    this.style.fontWeight = "bold";
+    this.style.color = "#666";
+  };
+
+  const lazyloading = function (entries) {
+    // console.log(entries);
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        attractionImg.src = attractionImg.dataset.src;
+        imgObserver.unobserve(attractionImg);
+      }
+    });
+  };
+  const obsOptions = {
+    rootMargin: "50px 0px",
+    root: null,
+    threshold: 0,
+  };
+  const imgObserver = new IntersectionObserver(lazyloading, obsOptions);
+  imgObserver.observe(attractionImg);
+
+  attractionImgWrapper.appendChild(attractionImg);
+
+  let attractionTitle = createElementWithClass("div", "attraction-title");
+  let attractionTitleP = document.createElement("p");
+  attractionTitleP.textContent = data.name;
+  attractionTitle.appendChild(attractionTitleP);
+
+  attractionFigure.appendChild(attractionImgWrapper);
+  attractionFigure.appendChild(attractionTitle);
+
+  let attractionInfo = createElementWithClass("div", "attraction-info");
+  let attractionCategory = createElementWithClass("div", "attraction-category");
+  attractionCategory.textContent = data.category;
+  let attractionMrt = createElementWithClass("div", "attraction-mrt");
+  attractionMrt.textContent = data.mrt;
+  attractionInfo.appendChild(attractionCategory);
+  attractionInfo.appendChild(attractionMrt);
+
+  attraction.appendChild(attractionFigure);
+  attraction.appendChild(attractionInfo);
+
+  attractionWrapper.appendChild(attraction);
+
+  attractionWrapper.addEventListener("click", () => {
+    // 在這裡處理點擊事件，例如導航到特定景點頁面
+    window.location = `/attraction/${data.id}`;
+  });
+
+  return attractionWrapper;
+}
+
+// fetch attraction
+async function fetchAttraction(page = 0, keyword = "") {
+  let response = await fetch(
+    `/api/attractions?page=${page}&keyword=${keyword}`,
+    {
+      method: "GET",
+    }
+  );
+  let data = await response.json();
+  return data;
+}
+
+// create attraction list
+async function createAttractionList() {
+  let data;
+  let imgIndex = 0;
+  let attractionContainer = document.querySelector(".attractions-container");
+  let searchInput = document.querySelector(".search-wrapper > input");
+  let searchBtn = document.querySelector(".search-wrapper > button");
+  let footer = document.querySelector("footer");
+
+  const loadingAttractions = async function (entries) {
+    entries.forEach(async (entry) => {
+      if (entry.isIntersecting && data.nextPage !== null) {
+        // 加載並顯示下一頁的資料
+        data = await fetchAttraction(data.nextPage, searchInput.value);
+        for (let i = 0; i < data.data.length; i++) {
+          let attraction = createAttractionElement(data.data[i], imgIndex);
+          attractionContainer.appendChild(attraction);
+          imgIndex++;
+        }
+        // 如果沒有下一頁，停止觀察 footer
+        if (data.nextPage === null) {
+          attractionObserver.unobserve(footer);
+        }
+      }
+    });
+  };
+
+  const obsOptions = {
+    rootMargin: "50px 0px",
+    root: null,
+    threshold: 0,
+  };
+
+  const attractionObserver = new IntersectionObserver(
+    loadingAttractions,
+    obsOptions
+  );
+
+  searchBtn.addEventListener("click", async () => {
+    data = await fetchAttraction(0, searchInput.value);
+    attractionContainer.innerHTML = "";
+
+    // 加載第一批資料並添加到畫面上
+    let imgIndex = 0;
+    for (let i = 0; i < data.data.length; i++) {
+      let attraction = createAttractionElement(data.data[i], imgIndex);
+      attractionContainer.appendChild(attraction);
+      imgIndex++;
+    }
+
+    // 觀察 footer 以加載更多景點
+    if (data.nextPage) {
+      attractionObserver.observe(footer);
+    }
+  });
+
+  data = await fetchAttraction(0);
+  for (let i = 0; i < data.data.length; i++) {
+    let attraction = createAttractionElement(data.data[i], imgIndex);
+    attractionContainer.appendChild(attraction);
+    imgIndex++;
+  }
+
+  // 觀察 footer 以加載更多景點
+  if (data.nextPage) {
+    attractionObserver.observe(footer);
+  }
+}
+
+createAttractionList();

@@ -1,9 +1,11 @@
 from fastapi import *
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from typing import List
-from routers import attraction_api, mrts
+from routers import attraction_api, mrts, user
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -23,3 +25,4 @@ async def thankyou(request: Request):
 
 app.include_router(attraction_api.router)
 app.include_router(mrts.router)
+app.include_router(user.router)
