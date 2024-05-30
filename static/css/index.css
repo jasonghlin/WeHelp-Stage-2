@@ -435,11 +435,15 @@ footer {
 
 @media (min-width: 360px) and (max-width:1200px) {
     nav {
-        max-width: 90vw
+        max-width: 100vw
     }
     
     .banner-search-container{
         max-width: 90vw
+    }
+
+    .search-wrapper {
+        max-width: 90vw;
     }
 
     .scroll-attraction{
