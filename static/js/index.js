@@ -266,3 +266,10 @@ async function createAttractionList() {
 }
 
 createAttractionList();
+
+// handle register
+function handleRegister() {
+  const registerName = document.querySelector("#register-name");
+  const registerEmail = document.querySelector("#register-email");
+  const registerPassword = document.querySelector("#register-password");
+}

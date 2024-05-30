@@ -132,12 +132,12 @@ def create_users_table():
 
 create_users_table()
 
-def check_db_user(User):
+def check_db_user(user):
     try:
         db_connection = get_db_connection()
         db = db_connection.cursor(dictionary = True)
         user_query = ("SELECT * FROM users WHERE email = %s")
-        val = (User.email, )
+        val = (user.email, )
         db.execute(user_query, val)
         return db.fetchone()
     except Exception as e:
@@ -148,6 +148,10 @@ def check_db_user(User):
         db_connection.close()
 
 
-def create_db_user(User):
+def create_db_user(user_hash):
     db_connection = get_db_connection()
     db = db_connection.cursor(dictionary = True)
+    user_query = ("INSERT INTO users(name, email, password) VALUES(%s, %s, %s)")
+    val = (user_hash.name, user_hash.email, user_hash.password)
+    db.execute(user_query, val)
+    db_connection.commit()
