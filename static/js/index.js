@@ -9,7 +9,12 @@ const formExit = document.querySelectorAll(".form-exit");
 const toRegisterLink = document.querySelector(".to-register-link");
 const toLoginLink = document.querySelector(".to-login-link");
 const footer = document.querySelector("footer");
-console.log(login);
+const logo = document.querySelector(".logo");
+
+logo.addEventListener("click", () => {
+  window.location = "/";
+});
+
 login.addEventListener("click", () => {
   overlay.classList.remove("hidden");
   // gradientBar.classList.remove("hidden");

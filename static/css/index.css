@@ -29,6 +29,7 @@ header {
     color: #448899;
     font-size: 3rem;
     line-height: 3.4rem;
+    cursor: pointer;
 }
 
 nav {
