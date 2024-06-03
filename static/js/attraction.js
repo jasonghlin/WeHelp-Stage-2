@@ -80,8 +80,8 @@ async function createPage() {
         <input type="radio" name="travel-time" id="afternoon" value="下半天">
         <label for="afternoon" class="afternoon-label">下半天</label>
       </div>
-      <p class="travel-fee">導覽費用: <span class="fee">新台幣2000元</span></p>
-      <button type="submit">開始預約行程</button>
+      <p class="travel-fee">導覽費用: 新台幣<span class="fee">2000</span>元</p>
+      <button class="booking-btn" type="submit">開始預約行程</button>
     </form>
   `;
   profileContainer.insertAdjacentHTML("beforeend", html);
@@ -93,13 +93,13 @@ async function createPage() {
 
   morningRadio.addEventListener("change", () => {
     if (morningRadio.checked) {
-      feeElement.textContent = "新台幣2000元";
+      feeElement.textContent = "2000";
     }
   });
 
   afternoonRadio.addEventListener("change", () => {
     if (afternoonRadio.checked) {
-      feeElement.textContent = "新台幣2500元";
+      feeElement.textContent = "2500";
     }
   });
 
@@ -232,3 +232,45 @@ function imageSlider() {
 }
 
 imageSlider();
+
+async function bookingTravel(attractionId, date, time, price) {
+  // 发送 POST 请求
+  const response = await fetch("/api/booking", {
+    method: "POST", // 请求方法
+    headers: {
+      "Content-Type": "application/json", // 请求头
+    },
+    body: JSON.stringify({ attractionId, date, time, price }), // 请求体
+  });
+
+  // 处理响应
+  if (!response.ok) {
+    const message = `An error has occurred: ${response.statusText}`;
+    throw new Error(message);
+  }
+
+  // 返回 JSON 格式的响应数据
+  return await response.json();
+}
+
+function booking() {
+  const bookingBtn = document.querySelector(".booking-btn");
+  bookingBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const id = window.location.pathname.split("/")[2];
+    const date = document.querySelector("#travel-day");
+    const selectedRadio = document.querySelector(
+      'input[name="travel-time"]:checked'
+    );
+    const fee = document.querySelector(".fee");
+    const result = await bookingTravel(
+      id,
+      date.value,
+      selectedRadio.id,
+      fee.textContent
+    );
+    console.log(result);
+  });
+}
+
+booking();

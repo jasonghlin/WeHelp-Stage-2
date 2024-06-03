@@ -1,4 +1,4 @@
-const login = document.querySelector(".menu:nth-child(2)");
+const login = document.querySelector(".menu li:nth-child(2)");
 const modalContainer = document.querySelector(".modal-container");
 const loginForm = document.querySelector(".login-container");
 const registerForm = document.querySelector(".register-container");
@@ -9,7 +9,7 @@ const formExit = document.querySelectorAll(".form-exit");
 const toRegisterLink = document.querySelector(".to-register-link");
 const toLoginLink = document.querySelector(".to-login-link");
 const footer = document.querySelector("footer");
-
+console.log(login);
 login.addEventListener("click", () => {
   overlay.classList.remove("hidden");
   // gradientBar.classList.remove("hidden");
@@ -38,6 +38,78 @@ formExit.forEach((el) => {
 });
 
 footer.textContent = `COPYRIGHT \u00A9 ${new Date().getFullYear()} 台北一日遊`;
+
+// handle register
+function handleRegister() {
+  const registerName = document.querySelector("#register-name");
+  const registerEmail = document.querySelector("#register-email");
+  const registerPassword = document.querySelector("#register-password");
+  const registerForm = document.querySelector(".register-form");
+
+  const registerUser = async (name, email, password) => {
+    const response = await fetch("/api/user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error:", errorData);
+    } else {
+      const data = await response.json();
+      console.log("Success:", data);
+      return data;
+    }
+  };
+
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const result = await registerUser(
+      registerName.value,
+      registerEmail.value,
+      registerPassword.value
+    );
+  });
+}
+
+handleRegister();
+
+// handle login
+function handleLogin() {
+  const loginEmail = document.querySelector("#login-email");
+  const loginPassword = document.querySelector("#login-password");
+  const loginForm = document.querySelector(".login-form");
+  const loginUser = async (email, password) => {
+    const response = await fetch("/api/user/auth", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error:", errorData);
+    } else {
+      const data = await response.json();
+      console.log("Success:");
+      return data;
+    }
+  };
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const jwtToken = await loginUser(loginEmail.value, loginPassword.value);
+    console.log(jwtToken);
+    sessionStorage.setItem("session", jwtToken.token);
+  });
+}
+
+handleLogin();
 
 // main
 
@@ -85,14 +157,14 @@ async function listBar() {
 
   document.querySelector(".prev-btn").addEventListener("click", function () {
     const mrtList = document.querySelector(".mrt-list");
-    // 每次點擊滾動左移 100px
-    mrtList.scrollLeft -= 100;
+    // 每次點擊滾動左移 300px
+    mrtList.scrollLeft -= 800;
   });
 
   document.querySelector(".next-btn").addEventListener("click", function () {
     const mrtList = document.querySelector(".mrt-list");
-    // 每次點擊滾動右移 100px
-    mrtList.scrollLeft += 100;
+    // 每次點擊滾動右移 300px
+    mrtList.scrollLeft += 800;
   });
 
   // add event listner on scroll list
@@ -266,10 +338,3 @@ async function createAttractionList() {
 }
 
 createAttractionList();
-
-// handle register
-function handleRegister() {
-  const registerName = document.querySelector("#register-name");
-  const registerEmail = document.querySelector("#register-email");
-  const registerPassword = document.querySelector("#register-password");
-}

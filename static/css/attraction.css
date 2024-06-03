@@ -458,6 +458,8 @@ footer {
 
 .hr-2 {
     margin: 4rem auto 4rem auto;
+    color: #E8E8E8;
+    border: .1rem solid #E8E8E8;
 }
 
 .section2 {

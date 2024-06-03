@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 import mysql.connector
 import logging
+from fastapi import Depends
 
 load_dotenv(dotenv_path='./.env')
 mysql_password = os.environ.get("MYSQL")
@@ -25,6 +26,8 @@ def get_db_connection():
         print(f'Database connection error: {err}')
         raise
     return cnx
+
+# attractions
 
 def get_db_attractions(page, keyword=None):
     try:
@@ -149,9 +152,42 @@ def check_db_user(user):
 
 
 def create_db_user(user_hash):
-    db_connection = get_db_connection()
-    db = db_connection.cursor(dictionary = True)
-    user_query = ("INSERT INTO users(name, email, password) VALUES(%s, %s, %s)")
-    val = (user_hash.name, user_hash.email, user_hash.password)
-    db.execute(user_query, val)
-    db_connection.commit()
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        user_query = ("INSERT INTO users(name, email, password) VALUES(%s, %s, %s)")
+        val = (user_hash.name, user_hash.email, user_hash.hashed_password)
+        db.execute(user_query, val)
+        db_connection.commit()
+    except Exception as e:
+        logging.error("Error when create user: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+
+def get_user_dependencies():
+    from routers.user import UserLoginRequest
+    return UserLoginRequest
+
+def get_user(user = Depends(get_user_dependencies)):
+    try: 
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        user_query = ("SELECT * FROM users WHERE email = %s")
+        print(user.email)
+        val = (user.email, )
+        db.execute(user_query, val)
+        result = db.fetchone()
+        print(result)
+        if result:
+            return result
+        else:
+            return {}
+    except Exception as e:
+        logging.error("Error when get user: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
