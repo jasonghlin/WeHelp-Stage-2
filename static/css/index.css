@@ -446,7 +446,7 @@ footer {
 
 @media (min-width: 360px) and (max-width:1200px) {
     nav {
-        max-width: 100vw
+        max-width: 90vw
     }
     
     .banner-search-container{
@@ -471,6 +471,9 @@ footer {
 }
 
 @media (min-width: 360px) and (max-width:600px){
+    nav {
+        max-width: 95vw
+    }
     .attraction-wrapper {
         flex-basis: 90%
     }
