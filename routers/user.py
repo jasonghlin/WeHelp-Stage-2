@@ -4,7 +4,8 @@ from pydantic import BaseModel
 from database import check_db_user, create_db_user, get_user
 from starlette import status
 from passlib.context import CryptContext
-from jose import jwt
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt, JWTError
 from dotenv import load_dotenv
 import os
 from datetime import timedelta, datetime
@@ -18,6 +19,9 @@ router = APIRouter(
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
+# 聲明一个 OAuth2PasswordBearer 實例，指向產生 token 的 URL
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/auth")
+
 
 class CreateUserRequest(BaseModel):
     name: str
@@ -43,6 +47,9 @@ class ErrorResponse(BaseModel):
     error: bool
     message: str
 
+class LoginStatus(BaseModel):
+    data: dict
+
 @router.post("/api/user", status_code=status.HTTP_200_OK, summary="註冊一個新的會員", responses={200: {"model": SuccessResponse}, 400: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
 async def create_user(create_user_request: CreateUserRequest):
     # 判斷密碼長相
@@ -65,24 +72,36 @@ async def create_user(create_user_request: CreateUserRequest):
             status_code=status.HTTP_200_OK,
             content={"ok": True}
         )
-    
 
-@router.get("/api/user/auth")
-async def get_user_status():
-    pass
+
+def verify_token(token: str):
+    try:
+        # 验证并解码 JWT
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+@router.get("/api/user/auth", response_model = LoginStatus)
+async def get_user_status(token: str = Depends(oauth2_scheme)):
+    payload = verify_token(token)
+    print(payload)
+    return LoginStatus(data = payload)
 
 
 def create_access_token(user_id: int, name: str, email: str, expires_delta: timedelta):
     encode = {"sub": email, "id": user_id, "name": name}
     expires = datetime.utcnow()+ expires_delta
     encode.update({"exp": expires})
-    print(encode)
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
 @router.put("/api/user/auth", status_code=status.HTTP_200_OK, summary="登入會員帳戶", responses={200: {"model": SuccessResponseToken}, 400: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
 async def login_for_access_token(user_login_request: UserLoginRequest):
     user = get_user(user_login_request)
-    print(user.get("password"))
     if not user or not bcrypt_context.verify(user_login_request.password, user.get("password")):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,

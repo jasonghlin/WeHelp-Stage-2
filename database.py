@@ -50,12 +50,12 @@ def get_db_attractions(page, keyword=None):
             db.execute(attraction_query, val_1)
             db.fetchall()
             row_count = db.rowcount
-            print(row_count)
+            # print(row_count)
         else:
             db.execute(attraction_query)
             db.fetchall()
             row_count = db.rowcount
-            print(row_count)
+            # print(row_count)
         offset = page * 12
         attraction_query += "LIMIT 12 OFFSET %s"
         if keyword:
@@ -176,11 +176,11 @@ def get_user(user = Depends(get_user_dependencies)):
         db_connection = get_db_connection()
         db = db_connection.cursor(dictionary = True)
         user_query = ("SELECT * FROM users WHERE email = %s")
-        print(user.email)
+        # print(user.email)
         val = (user.email, )
         db.execute(user_query, val)
         result = db.fetchone()
-        print(result)
+        # print(result)
         if result:
             return result
         else:

@@ -1,6 +1,9 @@
 const login = document.querySelector(".menu li:nth-child(2)");
 const modalContainer = document.querySelector(".modal-container");
 const loginForm = document.querySelector(".login-container");
+const loginEmailInput = document.querySelector("#login-email");
+const loginEmailPassword = document.querySelector("#login-password");
+const loginErrorDiv = document.querySelector(".login-error-message");
 const registerForm = document.querySelector(".register-container");
 const loginExit = document.querySelector(".login-form-exit");
 const registerExit = document.querySelector(".register-form-exit");
@@ -15,12 +18,25 @@ logo.addEventListener("click", () => {
   window.location = "/";
 });
 
-login.addEventListener("click", () => {
-  overlay.classList.remove("hidden");
-  // gradientBar.classList.remove("hidden");
-  loginForm.classList.remove("hidden");
-  modalContainer.classList.remove("hidden");
-});
+function modalControl(param) {
+  if (param === "hidden") {
+    overlay.classList.add("hidden");
+    // gradientBar.classList.remove("hidden");
+    loginForm.classList.add("hidden");
+    modalContainer.classList.add("hidden");
+  } else if (param === "block") {
+    overlay.classList.remove("hidden");
+    // gradientBar.classList.remove("hidden");
+    loginForm.classList.remove("hidden");
+    modalContainer.classList.remove("hidden");
+  }
+}
+
+function loginEvent() {
+  modalControl("block");
+}
+
+login.addEventListener("click", loginEvent);
 
 toRegisterLink.addEventListener("click", () => {
   loginForm.classList.add("hidden");
@@ -82,6 +98,13 @@ function handleRegister() {
 
 handleRegister();
 
+function logoutEvent() {
+  login.removeEventListener("click", logoutEvent);
+  login.textContent = "登入/註冊";
+  login.addEventListener("click", loginEvent);
+  sessionStorage.removeItem("session");
+}
+
 // handle login
 function handleLogin() {
   const loginEmail = document.querySelector("#login-email");
@@ -98,10 +121,15 @@ function handleLogin() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Error:", errorData);
+      loginErrorDiv.textContent = errorData.message;
     } else {
       const data = await response.json();
-      console.log("Success:");
+      loginEmailInput.value = "";
+      loginEmailPassword.value = "";
+      modalControl("hidden");
+      login.removeEventListener("click", loginEvent);
+      login.textContent = "登出";
+      login.addEventListener("click", logoutEvent);
       return data;
     }
   };
@@ -109,13 +137,53 @@ function handleLogin() {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const jwtToken = await loginUser(loginEmail.value, loginPassword.value);
-    console.log(jwtToken);
     sessionStorage.setItem("session", jwtToken.token);
   });
 }
 
 handleLogin();
 
+// token verify
+async function checkLoginStatus(token) {
+  const response = await fetch("/api/user/auth", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  console.log(response);
+  const data = await response.json();
+  if (data) {
+    console.log(data);
+    return data;
+  } else {
+    modalControl("block");
+    return false;
+  }
+}
+
+// handle booking plan
+function handleBookingPlan() {
+  const bookinPlanBtn = document.querySelector(".menu li:nth-child(1)");
+  bookinPlanBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const jwtToken = sessionStorage.getItem("session");
+    if (jwtToken) {
+      const userInfo = await checkLoginStatus(jwtToken);
+      console.log(userInfo);
+      if (userInfo) {
+        window.location.href = "/booking";
+      } else {
+        modalControl("block");
+      }
+    } else {
+      modalControl("block");
+    }
+  });
+}
+
+handleBookingPlan();
 // main
 
 function createElementWithClass(element, className) {
@@ -281,17 +349,20 @@ async function createAttractionList() {
   let searchInput = document.querySelector(".search-wrapper > input");
   let searchBtn = document.querySelector(".search-wrapper > button");
   let footer = document.querySelector("footer");
+  let isLoading = false;
 
   const loadingAttractions = async function (entries) {
     entries.forEach(async (entry) => {
-      if (entry.isIntersecting && data.nextPage !== null) {
+      if (entry.isIntersecting && data.nextPage !== null && !isLoading) {
         // 加載並顯示下一頁的資料
+        isLoading = true;
         data = await fetchAttraction(data.nextPage, searchInput.value);
         for (let i = 0; i < data.data.length; i++) {
           let attraction = createAttractionElement(data.data[i], imgIndex);
           attractionContainer.appendChild(attraction);
           imgIndex++;
         }
+        isLoading = false;
         // 如果沒有下一頁，停止觀察 footer
         if (data.nextPage === null) {
           attractionObserver.unobserve(footer);
