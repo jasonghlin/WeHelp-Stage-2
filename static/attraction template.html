@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attraction</title>
+  <link rel="stylesheet" href="/static/css/attraction.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <nav>
+      <h2 class="logo">台北一日遊</h2>
+      <ul class="menu">
+        <li>預留行程</li>
+        <li>登入/註冊</li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="overlay hidden"></div>
+  <div class="modal-container hidden">
+    <div class="modal-content">
+      <!-- 登入表單 -->
+      <div class="login-container hidden">
+        <div class="gradient-bar"></div>
+        <form action="" class="login-form">
+          <div class="login-form-exit form-exit">
+            <img src="/static/images/form-delete.png" alt="from-exit">
+          </div>
+          <h3>登入會員帳號</h3>
+          <input id="login-email" class="form-input" type="email" placeholder="輸入電子信箱" required>
+          <input id="login-password" class="form-input" type="password" placeholder="輸入密碼" required>
+          <button>登入帳戶</button>
+          <div class="to-register-wrapper">
+            <div>還沒有帳戶? </div>
+            <div class="to-register-link">點此註冊</div>
+          </div>
+        </form>
+      </div>
+      <!-- 註冊表單 -->
+      <div class="register-container hidden">
+        <div class="gradient-bar"></div>
+        <form action="" class="register-form ">
+          <div class="register-form-exit form-exit">
+            <img src="/static/images/form-delete.png" alt="from-exit">
+          </div>
+          <h3>註冊會員帳號</h3>
+          <input id="register-name" class="form-input" type="text" placeholder="姓名" required>
+          <input id="register-email" class="form-input" type="email" placeholder="電子郵件" required>
+          <input id="register-password" class="form-input" type="password" placeholder="密碼" required>
+          <button>註冊新帳戶</button>
+          <div class="to-login-wrapper">
+            <div>已經有帳戶了? </div>
+            <div class="to-login-link">登入</div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hr-1">
+
+  <section class="section1">
+    <div class="images-rotate">
+      <img src="/static/images/buttons/arrow-left-default.png" alt="left-arrow" class="left-arrow">
+      <div class="images">
+        <!-- 動態生成 image -->
+        <img src="https://www.travel.taipei/d_upload_ttn/sceneadmin/pic/11000400.jpg" alt="" class="img--active"
+          data-slide="0">
+        <img
+          src="https://www.travel.taipei/d_upload_ttn/cms/image/A0/B0/C0/D29/E472/F556/be224ffa-fb0f-4a77-88fc-c448aac3096c.jpg"
+          alt="" data-slide="1">
+        <img src="https://www.travel.taipei/d_upload_ttn/sceneadmin/pic/11000401.jpg" alt="" data-slide="2">
+        <img src="https://www.travel.taipei/d_upload_ttn/sceneadmin/pic/11000402.jpg" alt="" data-slide="3">
+        <div class="dots"></div>
+      </div>
+      <img src="/static/images/buttons/arrow-right-default.png" alt="right-arrow" class="right-arrow">
+    </div>
+    <div class="profile">
+      <!-- 動態生成 profile -->
+      <h3 class="attraction-name">平安鐘</h3>
+      <p class="attraction-cat-mrt"><span class="attraction-category">公共藝術</span> at <span
+          class="attraction-mrt">忠孝復興</span></p>
+      <div class="booking-form-wrapper">
+        <form action="">
+          <p class="form-title">訂購導覽行程</p>
+          <p>以此景點為中心的一日行程，帶您探索城市角落故事</p>
+          <div class="travel-day-wrapper">
+            <label for="travel-day" class="travel-day-label">選擇日期: </label>
+            <input type="date" id="travel-day">
+          </div>
+          <div class="travel-time-wrapper">
+            <label class="travel-time-label">選擇時間: </label>
+            <input type="radio" name="travel-time" id="morning" value="上半天">
+            <label for="morning" class="morning-label">上半天</label>
+            <input type="radio" name="travel-time" id="afternoon" value="下半天">
+            <label for="afternoon" class="afternoon-label">下半天</label>
+          </div>
+          <p class="travel-fee">導覽費用: <span class="fee">新台幣2000元</span></p>
+          <button type="submit">開始預約行程</button>
+        </form>
+      </div>
+    </div>
+  </section>
+  <!-- 動態生成 section 2 -->
+  <hr class="hr-2">
+  <section class="section2">
+    <div class="infos">
+      <div class="description">
+        平安鐘祈求大家的平安，這是為了紀念921地震週年的設計，在喧鬧的廣場上每個小時鳴鐘，保佑平安，祈禱臺灣不會再發生這樣的天災。雙手合十加上108個黃色的琉璃乳丁，隨著緩緩流下的水，在底下的一個小噴泉噴出。雙手合十的意義，一個是祈福，一個是包容，教我們要包容這樣的改變，撫平這樣的傷口。下面的水緩緩流出，代表著人的生命力是不斷地延續下去。緩緩地鐘聲，卻帶來心中的寧靜。
+        這個平安鐘是由建築師姚仁喜與琉璃創作家王俠軍共同設計，長6公尺、寬5公尺，以鑄銅製成，由法鼓山文教基金會全額出資。平安鐘點綴都市景觀，不時提醒大家，面對刻骨銘心的災難痛苦，更應該有謙卑的一顆心。</div>
+      <div class="address">
+        <p>景點地址:</p>
+        <p>臺北市 大安區忠孝東路4段</p>
+      </div>
+      <div class="transport">
+        <p>交通方式</p>
+        <p>捷運站名：忠孝復興站4號出口1.公車：204、212、212直、232、232副、262、262(區間)、278、299、521、605、605(副)、605(新台五線)、667、903、忠孝新幹線至頂好市場站
+          2.車位：太平洋崇光百貨地下停車場或市民大道附近地下停車場</p>
+      </div>
+    </div>
+  </section>
+  <footer></footer>
+  <script type="module" src="/static/js/attraction.js"></script>
+</body>
+
+</html>

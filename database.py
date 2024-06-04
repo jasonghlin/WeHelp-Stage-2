@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 import mysql.connector
 import logging
+from fastapi import Depends
 
 load_dotenv(dotenv_path='./.env')
 mysql_password = os.environ.get("MYSQL")
@@ -26,6 +27,8 @@ def get_db_connection():
         raise
     return cnx
 
+# attractions
+
 def get_db_attractions(page, keyword=None):
     try:
         db_connection = get_db_connection()
@@ -47,12 +50,12 @@ def get_db_attractions(page, keyword=None):
             db.execute(attraction_query, val_1)
             db.fetchall()
             row_count = db.rowcount
-            print(row_count)
+            # print(row_count)
         else:
             db.execute(attraction_query)
             db.fetchall()
             row_count = db.rowcount
-            print(row_count)
+            # print(row_count)
         offset = page * 12
         attraction_query += "LIMIT 12 OFFSET %s"
         if keyword:
@@ -103,6 +106,87 @@ def get_db_mrts():
         return db.fetchall()
     except Exception as e:
         logging.error("Error when fetching attractions info: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+# create user table if not exist
+def create_users_table():
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        db.execute("USE taipei_day_trip")
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS users(
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(50) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            password VARCHAR(255) NOT NULL
+        )
+    """
+        db.execute(create_table_query)
+    except Exception as e:
+        logging.error("Error when creating user table: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+create_users_table()
+
+def check_db_user(user):
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        user_query = ("SELECT * FROM users WHERE email = %s")
+        val = (user.email, )
+        db.execute(user_query, val)
+        return db.fetchone()
+    except Exception as e:
+        logging.error("Error when fetching user info: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+
+def create_db_user(user_hash):
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        user_query = ("INSERT INTO users(name, email, password) VALUES(%s, %s, %s)")
+        val = (user_hash.name, user_hash.email, user_hash.hashed_password)
+        db.execute(user_query, val)
+        db_connection.commit()
+    except Exception as e:
+        logging.error("Error when create user: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+
+def get_user_dependencies():
+    from routers.user import UserLoginRequest
+    return UserLoginRequest
+
+def get_user(user = Depends(get_user_dependencies)):
+    try: 
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        user_query = ("SELECT * FROM users WHERE email = %s")
+        # print(user.email)
+        val = (user.email, )
+        db.execute(user_query, val)
+        result = db.fetchone()
+        # print(result)
+        if result:
+            return result
+        else:
+            return {}
+    except Exception as e:
+        logging.error("Error when get user: %s", e, exc_info=True)
         return {}
     finally:
         db.close()

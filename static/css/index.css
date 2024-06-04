@@ -1,0 +1,488 @@
+html {
+    font-size: 62.5%;
+}
+
+body {
+    box-sizing: border-box;
+    /* font-family: 'Alegreya', serif; */
+    font-size: 1.6rem;
+    font-family: Noto Sans TC, Sans-Serif ;
+
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    width: 100%;
+    position: fixed;
+    background-color: rgba(255, 255, 255, 0.95);
+    z-index: 20;
+    top: 0;
+    height: 5.4rem;
+}
+
+.logo {
+    font-weight: 700;
+    color: #448899;
+    font-size: 3rem;
+    line-height: 3.4rem;
+    cursor: pointer;
+}
+
+nav {
+    width: 120rem;
+    height: 5.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu > li {
+    list-style: none;
+    margin-left: 2rem;
+    cursor: pointer;
+    color: #666;
+    padding: 1rem;
+    font-weight: 500;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    z-index: 5;
+   
+}
+
+.modal-container {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* height: 100%;  */
+    display: flex;
+    justify-content: center;
+    /* align-items: center;  */
+    z-index: 10; 
+}
+
+.modal-content {
+    width: 34rem; 
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: .6rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    top: 8rem;
+}
+
+.gradient-bar{
+    background: linear-gradient(270deg, #337788 0%, #66AABB 100%);
+    z-index: 10;
+    /* width: 100%; */
+    height: 1rem;
+    border-radius: .6rem .6rem 0 0;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 0 0 .6rem .6rem;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.form-exit {
+    position: absolute;
+    top: .7rem;
+    right: 2rem;
+    cursor: pointer;
+    color: #bbb;
+    width: 1.6rem;
+}
+
+.form-exit > img {
+    width: 100%;
+}
+
+.form-input{
+    height: 4.7rem;
+    width: 100%;
+    border-radius: .5rem;
+    padding: 1.5rem;
+    margin: .5rem 0 .5rem 0;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.login-form > h3 {
+    font-weight: 700;
+    font-size: 2.4rem;
+    align-items: center;
+    color: #666666;
+
+}
+
+.login-form > button{
+    width: 100%;
+    font-size: 1.9rem;
+    line-height: 1.6rem;
+    margin: 0.5rem 0 1rem 0;
+    background-color: #448899;
+    color: white;
+    border: none;
+    border-radius: .5rem;
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: 400;
+    text-align: center;
+    box-sizing: border-box;
+    height: 4.7rem;
+}
+
+.to-register-wrapper{
+    display: flex;
+}
+
+.to-register-wrapper > div {
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1.33rem;
+    color: #666666;
+}
+
+.to-register-link {
+    cursor: pointer;
+    margin-left: .5rem;
+}
+
+.to-register-link:hover {
+    color: #448899
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 0 0 .6rem .6rem;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.register-form > h3 {
+    font-weight: 700;
+    font-size: 2.4rem;
+    align-items: center;
+    color: #666666;
+
+}
+
+.register-form > button{
+    width: 100%;
+    font-size: 1.9rem;
+    line-height: 1.6rem;
+    margin: 0.5rem 0 1rem 0;
+    background-color: #448899;
+    color: white;
+    border: none;
+    border-radius: .5rem;
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: 400;
+    text-align: center;
+    box-sizing: border-box;
+    height: 4.7rem;
+}
+
+.to-login-wrapper{
+    display: flex;
+}
+
+.to-login-wrapper > div {
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1.33rem;
+    color: #666666;
+}
+
+.to-login-link {
+    cursor: pointer;
+    margin-left: .5rem;
+}
+
+.to-login-link:hover {
+    color: #448899
+}
+
+.hidden {
+    display: none;
+}
+
+footer {
+    width: 100%;
+    height:10.4rem;
+    /* position: fixed; */
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color:#757575;
+    padding: 4rem, 84.3rem, 4rem, 84.3rem;
+    margin-top: 2rem;
+    color: white;
+}
+
+/* main */
+
+.banner{
+    min-height: 30rem;
+    background-image: url("../images/welcome.png");
+    background-size: cover;
+    background-position: top;
+    background-repeat: no-repeat;
+    margin-top: 5.4rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1rem;
+}
+
+.banner-search-container {
+    width: 120rem;
+    align-items: flex-start; 
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.banner-title {
+    font-weight: 700;
+    font-size: 2.8rem;
+    line-height: 2.4rem;
+    color: #F8F8F8;
+    height: 4.1rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0px 0px 30px #AABBCC
+}
+
+.banner-search-container > p {
+    font-weight: 700;
+    font-size: 1.6rem;
+    line-height: 1.33rem;
+    color: #F8F8F8;
+
+}
+
+.search-wrapper {
+    width: 46rem;
+    height: 4.6rem;
+    position:relative;
+    margin-top: 2.5rem;
+
+}
+
+.search-wrapper > input {
+    border: none;
+    width: 90%;
+    padding: 1.5rem;
+    border-radius: .4rem 0 0 .4rem;
+}
+
+.search-wrapper > input:focus {
+    outline: none;
+}
+
+.search-wrapper > button {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    width: 6rem;
+    border: none;
+    background-color: #489;
+    color: white;
+    font-size: 3rem;
+    border-radius: 0 .4rem .4rem 0;
+    cursor: pointer;
+}
+
+.scroll-attraction {
+    max-width: 120rem;
+    /* background-color: aquamarine; */
+    height: 5rem;
+    margin: 2rem auto 0 auto;
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+}
+
+.scroll-btn {
+    cursor: pointer;
+}
+
+.mrt-list {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+    scroll-behavior: smooth; 
+}
+
+.list-item {
+    background-color: transparent;
+    outline: none;
+    border: none;
+    margin-right: 1rem;
+    margin-left: 1rem;
+    cursor: pointer;
+    font-size: 1.8rem;
+    font-weight: 500;
+    font-size: 1.6rem;
+    color: #666666;
+    transition: all .3s;
+}
+
+.list-item:hover {
+    color: black
+}
+
+.scroll-btn img {
+    transition: all 0.3s ease;
+}
+
+.scroll-btn:hover .prev-btn-img {
+    content: url('/static/images/buttons/arrow-left-hovered.png');
+}
+
+.scroll-btn:hover .next-btn-img {
+    content: url('/static/images/buttons/arrow-right-hovered.png');
+}
+
+
+.attractions-container {
+    width: 120rem;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 2rem auto 0 auto;
+    justify-content: space-between;
+    gap: 3rem 3rem;
+    cursor: pointer;
+}
+
+.attraction-wrapper {
+    list-style: none;
+    flex: 1 0 270px; 
+    border-radius: .5rem;
+    overflow: hidden;
+    border: .1rem solid #E8E8E8
+}
+
+.attraction-figure {
+    width: 100%;
+    height: 197px;
+    position: relative;
+    overflow: hidden;
+    
+}
+
+.image-wrapper{
+    width: 100%;
+    height: 100%
+}
+
+.attraction-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: .5rem .5rem 0 0;
+}
+
+.attraction-title {
+    position: absolute;
+    bottom: 0rem;
+    z-index: 1;
+    color: white;
+    background-color:rgba(0, 0, 0, 0.6);
+    width: 100%;
+    padding: 1rem;
+    height: 2rem
+}
+
+.attraction-title > p {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.attraction-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    font-weight: 500;
+    font-size: 1.6rem;
+    color: #757575;
+}
+
+
+@media (min-width: 360px) and (max-width:1200px) {
+    nav {
+        max-width: 90vw
+    }
+    
+    .banner-search-container{
+        max-width: 90vw
+    }
+
+    .search-wrapper {
+        max-width: 90vw;
+    }
+
+    .scroll-attraction{
+        max-width: 90vw
+    }
+
+    .attractions-container {
+        max-width: 90vw;
+    }
+
+    .attraction-wrapper {
+        flex-basis: calc((90% - 2rem) / 2)
+    }
+}
+
+@media (min-width: 360px) and (max-width:600px){
+    nav {
+        max-width: 95vw
+    }
+    .attraction-wrapper {
+        flex-basis: 90%
+    }
+    .menu > li {
+        list-style: none;
+        margin-left: 0;
+        cursor: pointer;
+        color: #666;
+        padding: 1rem;
+        font-weight: 500;
+    }
+}
