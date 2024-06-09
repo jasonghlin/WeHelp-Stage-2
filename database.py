@@ -191,3 +191,142 @@ def get_user(user = Depends(get_user_dependencies)):
     finally:
         db.close()
         db_connection.close()
+
+
+def create_bookings_table():
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        db.execute("USE taipei_day_trip")
+        create_table_query = """
+            CREATE TABLE IF NOT EXISTS bookings(
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                attraction_id INT,
+                user_id INT,
+                date DATE,
+                time CHAR(10),
+                price INT,
+                Foreign Key(attraction_id) References attractions(id),
+                Foreign Key(user_id) References users(id)
+            )
+"""
+        db.execute(create_table_query)
+    except Exception as e:
+        logging.error("Error when creating user table: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+create_bookings_table()
+
+
+def create_orders_table():
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        db.execute("USE taipei_day_trip")
+        create_table_query = """
+            CREATE TABLE IF NOT EXISTS orders(
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                prime INT,
+                booking_id INT,
+                user_id INT,
+                Foreign Key(booking_id) References bookings(id),
+                Foreign Key(user_id) References users(id)
+            )
+"""
+        db.execute(create_table_query)
+    except Exception as e:
+        logging.error("Error when creating user table: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+create_orders_table()
+
+# booking
+def get_user_dependencies():
+    from routers.booking_attraction import AttractionBookingInfo
+    return AttractionBookingInfo
+
+def create_db_booking(user_id, booking_info = Depends(get_user_dependencies)):
+    try: 
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        existing_booking_query = """
+            SELECT bookings.id, bookings.attraction_id, bookings.user_id, bookings.date, bookings.time, bookings.price FROM bookings
+            LEFT JOIN orders ON bookings.id = orders.booking_id
+            WHERE bookings.user_id = %s AND bookings.attraction_id = %s AND orders.id IS NULL
+""" 
+        existing_booking_val = (user_id, booking_info.attractionId)
+        db.execute(existing_booking_query, existing_booking_val)
+        existing_booking = db.fetchone()
+        if existing_booking:
+            booking_query = ("""
+            UPDATE bookings SET attraction_id = %s, date = %s, time = %s, price = %s
+            WHERE id = %s
+""")
+            val = (booking_info.attractionId, booking_info.date, booking_info.time, booking_info.price, existing_booking['id'])
+        else:
+            booking_query = ("""
+                INSERT INTO bookings(attraction_id, user_id, date, time, price)
+                VALUES(%s, %s, %s, %s, %s)
+    """)
+            # print(user.email)
+            val = (booking_info.attractionId, user_id, booking_info.date, booking_info.time, booking_info.price)
+        db.execute(booking_query, val)
+        db_connection.commit()
+        return True
+        # print(result)
+    except Exception as e:
+        logging.error("Error when create booking: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+
+def fetch_db_user_booking(user_id):
+    try: 
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        booking_query = ("""
+            SELECT bookings.id, bookings.attraction_id, bookings.user_id, bookings.date, bookings.time, bookings.price, attractions.images, attractions.name, attractions.address FROM bookings
+            LEFT JOIN orders ON bookings.id = orders.booking_id
+            LEFT JOIN attractions ON bookings.attraction_id = attractions.id
+            WHERE bookings.user_id = %s AND orders.id IS NULL
+""")
+        # print(user.email)
+        val = (user_id, )
+        db.execute(booking_query, val)
+        result = db.fetchall()
+        # print(result)
+        if result:
+            return result
+        else:
+            return {}
+    except Exception as e:
+        logging.error("Error when get user booking: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+
+def delete_db_booking(attraction_id):
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        delete_query = "DELETE FROM bookings WHERE attraction_id = %s"
+        delete_val = (attraction_id, )
+        db.execute(delete_query, delete_val)
+        db_connection.commit()
+        return True
+    except Exception as e:
+        logging.error("Error when delete booking: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()

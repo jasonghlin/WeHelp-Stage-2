@@ -1,5 +1,6 @@
 html {
     font-size: 62.5%;
+    height: 100%;
 }
 
 body {
@@ -7,7 +8,10 @@ body {
     /* font-family: 'Alegreya', serif; */
     font-size: 1.6rem;
     font-family: Noto Sans TC, Sans-Serif ;
-
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%
 }
 
 * {
@@ -240,29 +244,45 @@ nav {
 
 footer {
     width: 100%;
-    height:10.4rem;
-    /* position: fixed; */
-    bottom: 0;
+    height: 10.4rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color:#757575;
-    padding: 4rem, 84.3rem, 4rem, 84.3rem;
-    margin-top: 2rem;
+    background-color: #757575;
+    padding: 4rem;
     color: white;
+    margin-top: auto;
+    flex-grow: 1;
 }
 
 /* main */
+.main {
+    flex: 1; /* 確保 main 佔據剩餘的空間 */
+    display: flex;
+    flex-direction: column;
+    margin-top: 5.4rem;
+}
+
 .hr-1 {
     margin-top: 5.4rem;
     margin-bottom: 4rem;
     border: 1px solid #E8E8E8;
 }
 
+.booking-info-container-wrapper {
+    width: 98rem;
+    height: 20rem;
+    font-size: 1.9rem;
+    line-height: 1.6rem;
+    color: #666666;
+    margin: auto
+}
+
 .booking-info-container {
     width: 98rem;
     height: 20rem;
     margin: auto;
+    overflow-y: auto;
 }
 
 .booking-welcome {
@@ -303,6 +323,11 @@ footer {
     line-height: 1.33rem;
     color: #448899;
     margin-bottom: 2rem;
+}
+
+.no-booking-message {
+    width: 98rem;
+    margin: auto;
 }
 
 .travel-day, .travel-time, .travel-fee, .travel-position {
@@ -415,6 +440,7 @@ footer {
 
 .final-confirm-btn {
     margin-top: 2rem;
+    margin-bottom: 4rem;
     border-radius: .5rem;
     padding: 1rem 2rem 1rem 2rem;
     background-color: #448899;
@@ -426,20 +452,77 @@ footer {
     cursor: pointer;
 }
 
+.hidden {
+    display: none
+}
+
 @media (min-width: 360px) and (max-width:1200px) {
     nav {
-        max-width: 100vw
+        max-width: 90vw
     }
 
-    footer {
-        max-width: 100vw;
+    .booking-info-container-wrapper {
+        max-width: 90vw;
     }
-    
-    .user-info-container {
+
+    .section2-container {
+        max-width: 90vw;
+    }
+
+    .reminder {
+        line-height: 2.317rem;
+    }
+
+    .travel-position > span {
+        line-height: 2.317rem;
+    }
+
+    .no-booking-message {
         max-width: 90vw;
     }
 }
 
+    .booking-attraction-info-wrapper {
+        max-width: 90vw;
+    }
+
+    .booking-info-container {
+        max-width: 90vw;
+    }
+
+    hr {
+        max-width: 90vw;
+    }
+
+    .final-confirm-container {
+        max-width: 90vw;
+    }
+
+    .main{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .user-info-container {
+        max-width: 90vw;
+    }
+
+    .credit-card-container {
+        max-width: 90vw;
+    }
 @media (min-width: 360px) and (max-width:600px){
+    nav {
+        max-width: 95vw;
+    }
     
+    .menu > li {
+        list-style: none;
+        margin-left: 0;
+        cursor: pointer;
+        color: #666;
+        padding: 1rem;
+        font-weight: 500;
+    }
 }

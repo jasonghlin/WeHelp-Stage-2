@@ -76,7 +76,6 @@ async def create_user(create_user_request: CreateUserRequest):
 
 def verify_token(token: str):
     try:
-        # 验证并解码 JWT
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError:
@@ -107,5 +106,5 @@ async def login_for_access_token(user_login_request: UserLoginRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"error": True, "message": "登入失敗，帳號或密碼錯誤"}
         )
-    token = create_access_token(user.get("email"), user.get("id"), user.get("name"), timedelta(days=7))
+    token = create_access_token(user.get("id"), user.get("name"), user.get("email"), timedelta(days=7))
     return SuccessResponseToken(token = token)
