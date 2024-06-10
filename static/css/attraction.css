@@ -357,7 +357,7 @@ footer {
     object-fit: cover;
     border-radius: .5rem;
     opacity: 0;
-    transition: all 1.5s;
+    transition: all 1.5s ease-in-out;
 }
 
 .images > .img--active {
@@ -471,6 +471,7 @@ footer {
     margin: 4rem auto 4rem auto;
     color: #E8E8E8;
     border: .1rem solid #E8E8E8;
+    width: 120rem;
 }
 
 .section2 {
@@ -481,7 +482,7 @@ footer {
 .description {
     font-weight: 400;
     font-size: 1.6rem;
-    line-height: 2.317rem;
+    line-height: 1.7;
     color:#666666;
     margin-bottom: 2rem;
 }
@@ -491,12 +492,13 @@ footer {
     font-size: 1.6rem;
     line-height: 1.33rem;
     color: #666666;
+    margin-bottom: .5rem;
 }
 
 .address > :nth-child(2) {
     font-weight: 400;
     font-size: 1.6rem;
-    line-height: 2.317rem;
+    line-height: 1.7;
     color: #666666;
     margin-bottom: 2rem;
 }
@@ -506,12 +508,13 @@ footer {
     font-size: 1.6rem;
     line-height: 1.33rem;
     color: #666666;
+    margin-bottom: .5rem;
 }
 
 .transport > :nth-child(2) {
     font-weight: 400;
     font-size: 1.6rem;
-    line-height: 2.317rem;
+    line-height: 1.7;
     color: #666666;
     margin-bottom: 2rem;
 }
@@ -527,8 +530,13 @@ footer {
         margin-right: auto;
     }
 
+    
     footer {
         width: 100vw;
+    }
+
+    .hr-2 {
+        width: 90vw
     }
 }
 
@@ -538,13 +546,12 @@ footer {
     }
 
     .section1, .section2 {
-        max-width: 90vw;
-        margin-left: auto;
-        margin-right: auto;
+        width: 100vw;
+        max-width: 100vw;
     }
 
     .section1 {
-        flex-shrink: 1;
+        /* flex-shrink: 1; */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -552,17 +559,54 @@ footer {
 
     .images-rotate{
         margin-right: 0;
-        max-width: 90vw;
+        width: 100vw;
+        max-width: 100vw;
+        
+    }
+
+    .images-rotate > .images {
+        width: 100vw;
+        max-width: 100vw;
+    }
+
+    .images > img {
+        width: 100%;
+        max-width: 100vw;
     }
 
     .profile {
         margin: auto;
-        max-width: 90vw;
+        max-width: 100vw;
     }
 
     .booking-form-wrapper {
-        margin: auto;
-        max-width: 90vw;
+        width: calc(100% - 2rem); 
+        box-sizing: border-box;
+        margin: 0 1rem; 
+    }
+
+    .attraction-name {
+        margin: 2rem 1rem 0 1rem;
+
+    }
+
+    .attraction-cat-mrt, .profile, .booking-form-wrapper {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+
+    .hr-2 {
+        width: calc(100% - 2rem); 
+        box-sizing: border-box;
+        max-width: 100vw;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    .description, .address, .transport {
+        margin-left: 1rem;
+        margin-right: 1rem;
     }
 
     footer {

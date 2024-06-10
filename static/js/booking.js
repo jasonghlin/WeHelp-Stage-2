@@ -195,6 +195,77 @@ function handleBookingPlan() {
 handleBookingPlan();
 
 // main
+
+// Tappay
+function tappay() {
+  TPDirect.setupSDK("APP_ID", "APP_KEY", "sandbox");
+  let fields = {
+    number: {
+      // css selector
+      element: "#credit-card-number",
+      placeholder: "**** **** **** ****",
+    },
+    expirationDate: {
+      // DOM object
+      element: document.getElementById("expiration-date"),
+      placeholder: "MM / YY",
+    },
+    ccv: {
+      element: "#card-cvv",
+      placeholder: "CVV",
+    },
+  };
+
+  TPDirect.card.setup({
+    fields: fields,
+    styles: {
+      // Style all elements
+      input: {
+        color: "gray",
+      },
+      // Styling ccv field
+      "input.ccv": {
+        // 'font-size': '16px'
+      },
+      // Styling expiration-date field
+      "input.expiration-date": {
+        // 'font-size': '16px'
+      },
+      // Styling card-number field
+      "input.card-number": {
+        // 'font-size': '16px'
+      },
+      // style focus state
+      ":focus": {
+        // 'color': 'black'
+      },
+      // style valid state
+      ".valid": {
+        color: "green",
+      },
+      // style invalid state
+      ".invalid": {
+        color: "red",
+      },
+      // Media queries
+      // Note that these apply to the iframe, not the root window.
+      "@media screen and (max-width: 400px)": {
+        input: {
+          color: "orange",
+        },
+      },
+    },
+    // 此設定會顯示卡號輸入正確後，會顯示前六後四碼信用卡卡號
+    isMaskCreditCardNumber: true,
+    maskCreditCardNumberRange: {
+      beginIndex: 6,
+      endIndex: 11,
+    },
+  });
+}
+
+tappay();
+
 // check login status
 const jwtToken = sessionStorage.getItem("session");
 let user_info;
@@ -365,6 +436,24 @@ async function userBookings() {
 }
 userBookings();
 
+// fetch post orders
+async function bookingOrderSuccess(request, token) {
+  const response = await fetch("/api/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(request),
+  });
+  if (!response.ok) {
+    const message = `An error has occurred: ${response.statusText}`;
+    throw new Error(message);
+  }
+
+  return await response.json();
+}
+
 // check 2 forms
 function checkFormsValidity() {
   const finalConfirmBtn = document.querySelector(".final-confirm-btn");
@@ -374,10 +463,70 @@ function checkFormsValidity() {
 
     const form1 = document.querySelector(".user-info-container");
     const form2 = document.querySelector(".credit-card-container");
+    const tappayStatus = TPDirect.card.getTappayFieldsStatus();
 
     if (form1.checkValidity() && form2.checkValidity()) {
-      form1.submit();
-      form2.submit();
+      if (tappayStatus.canGetPrime === false) {
+        alert("Can not get prime");
+        return;
+      }
+
+      TPDirect.card.getPrime(async (result) => {
+        if (result.status !== 0) {
+          alert("get prime error " + result.msg);
+          return;
+        }
+        const price = document.querySelector(".price > span");
+        const attractionsInfo = document.querySelectorAll(
+          ".booking-attraction-info-wrapper"
+        );
+        const trip = [];
+        attractionsInfo.forEach((attractionInfo) => {
+          let id = attractionInfo.dataset.attraction;
+          let name = attractionInfo.querySelector(".attraction-name > span");
+          let address = attractionInfo.querySelector(".travel-position > span");
+          let image = attractionInfo.querySelector(".booking-image > img").src;
+          let date = attractionInfo.querySelector(".travel-day > span");
+          let time = attractionInfo.querySelector(".travel-time > span");
+          let attraction = {
+            attraction: {
+              id: id,
+              name: name,
+              address: address,
+              image: image,
+            },
+            date: date,
+            time: time,
+          };
+          trip.push(attraction);
+        });
+        let name = document.querySelector("#name").value;
+        let email = document.querySelector("#email").value;
+        let phone = document.querySelector("#phone").value;
+        let contact = {
+          name: name,
+          email: email,
+          phone: phone,
+          contact: contact,
+        };
+
+        let request = {
+          prime: result.card.prime,
+          order: {
+            price: price,
+            trip: trip,
+            contact: contact,
+          },
+        };
+
+        const data = await bookingOrderSuccess(request, jwtToken);
+        if (data.ok && data.data) {
+          alert("訂單建立成功！");
+          window.location.href = "/thankyou?number=" + data.data.order_number;
+        } else {
+          alert("訂單建立失敗: " + data.message);
+        }
+      });
     } else {
       // 验证表单
       form1.reportValidity();

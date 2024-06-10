@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.18.0"></script>
 </head>
 
 <body>
@@ -119,12 +120,12 @@
         </div>
         <div class="cvv-wrapper">
           <label for="cvv">驗證密碼：</label>
-          <input class="cvv" placeholder="CVV" type="text" maxlength="3" required />
+          <input id="card-cvv" class="cvv" placeholder="CVV" type="text" maxlength="3" required />
         </div>
       </form>
       <hr class="hr-4">
       <div class="final-confirm-container">
-        <div class="price">總價：<span>新台幣 0 元</span></div>
+        <div class="price">總價：新台幣<span>0</span>元</div>
         <button class="final-confirm-btn">確認訂購並付款</button>
       </div>
     </div>

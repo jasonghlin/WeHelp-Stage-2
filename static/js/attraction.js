@@ -204,6 +204,10 @@ async function fetchAttraction(id) {
 
 const data = await fetchAttraction(window.location.pathname.split("/")[2]);
 
+if (!data) {
+  window.location = "/";
+}
+
 function createElementWithClass(element, className) {
   let container = document.createElement(element);
   container.className = className;
