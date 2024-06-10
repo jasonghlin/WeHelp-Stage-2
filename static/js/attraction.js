@@ -226,17 +226,17 @@ async function createPage() {
       <p class="form-title">訂購導覽行程</p>
       <p>以此景點為中心的一日行程，帶您探索城市角落故事</p>
       <div class="travel-day-wrapper">
-        <label for="travel-day" class="travel-day-label">選擇日期: </label>
+        <label for="travel-day" class="travel-day-label">選擇日期：</label>
         <input type="date" id="travel-day" required>
       </div>
       <div class="travel-time-wrapper">
-        <label class="travel-time-label">選擇時間: </label>
+        <label class="travel-time-label">選擇時間：</label>
         <input type="radio" name="travel-time" id="morning" value="上半天" required>
         <label for="morning" class="morning-label">上半天</label>
         <input type="radio" name="travel-time" id="afternoon" value="下半天" required>
         <label for="afternoon" class="afternoon-label">下半天</label>
       </div>
-      <p class="travel-fee">導覽費用: 新台幣<span class="fee">2000</span>元</p>
+      <p class="travel-fee">導覽費用：新台幣<span class="fee">2000</span>元</p>
       <button class="booking-btn" type="submit">開始預約行程</button>
     </form>
   `;

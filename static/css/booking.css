@@ -266,7 +266,8 @@ footer {
 .hr-1 {
     margin-top: 5.4rem;
     margin-bottom: 4rem;
-    border: 1px solid #E8E8E8;
+    border: .1rem solid #E8E8E8;
+    width: 100%
 }
 
 .booking-info-container-wrapper {
@@ -516,7 +517,7 @@ footer {
         max-width: 90vw;
     }
 
-    hr {
+    .hr-2, .hr-3, .hr-4 {
         max-width: 90vw;
     }
 

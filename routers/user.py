@@ -47,8 +47,13 @@ class ErrorResponse(BaseModel):
     error: bool
     message: str
 
+class LoginStatusResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+
 class LoginStatus(BaseModel):
-    data: dict
+    data: LoginStatusResponse
 
 @router.post("/api/user", status_code=status.HTTP_200_OK, summary="註冊一個新的會員", responses={200: {"model": SuccessResponse}, 400: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
 async def create_user(create_user_request: CreateUserRequest):
@@ -85,7 +90,7 @@ def verify_token(token: str):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-@router.get("/api/user/auth", response_model = LoginStatus)
+@router.get("/api/user/auth", status_code=status.HTTP_200_OK, response_model = LoginStatus,  summary="取得當前登入的會員資訊")
 async def get_user_status(token: str = Depends(oauth2_scheme)):
     payload = verify_token(token)
     print(payload)
