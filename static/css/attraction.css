@@ -569,7 +569,7 @@ footer {
         margin-right: 0;
         width: 100vw;
         max-width: 100vw;
-        
+        border-radius: 0;
     }
 
     .images-rotate > .images {
@@ -580,6 +580,7 @@ footer {
     .images > img {
         width: 100%;
         max-width: 100vw;
+        border-radius: 0;
     }
 
     .profile {
