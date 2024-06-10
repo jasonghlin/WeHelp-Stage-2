@@ -111,16 +111,15 @@
         <div class="credi-card-info-title">信用付款資訊</div>
         <div class="credit-card-number-wrapper">
           <label for="credit-card-number">卡片號碼：</label>
-          <input id="credit-card-number" type="text" inputmode="numeric" pattern="[0-9\s]{13,19}"
-            autocomplete="cc-number" maxlength="16" placeholder="**** **** **** ****" required>
+          <div id="credit-card-number" class="tpfield input-system"></div>
         </div>
         <div class="expiration-date-wrapper">
           <label for="expiration-date">過期時間：</label>
-          <input id="expiration-date" type="text" placeholder="MM / YY" required>
+          <div id="expiration-date" class="tpfield input-system"></div>
         </div>
         <div class="cvv-wrapper">
           <label for="cvv">驗證密碼：</label>
-          <input id="card-cvv" class="cvv" placeholder="CVV" type="text" maxlength="3" required />
+          <div id="card-cvv" class="tpfield input-system"></div>
         </div>
       </form>
       <hr class="hr-4">

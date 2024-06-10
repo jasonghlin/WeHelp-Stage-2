@@ -410,13 +410,39 @@ footer {
     line-height: 1.33rem;
     color: #666666;
 }
-
+/* 
 .credit-card-number-wrapper > input, .expiration-date-wrapper > input, .cvv-wrapper > input {
     width: 20rem;
     border-radius: .5rem;
     padding: 1rem;
     box-sizing: border-box;
     border: 1px solid #E8E8E8;
+} */
+
+.credit-card-number-wrapper, .expiration-date-wrapper, .cvv-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.tpfield {
+    width: 20rem;
+    height: 38px;
+    /* margin: 5px 0; */
+    padding: 1px;
+    box-sizing: border-box;
+}
+
+.input-system {
+  font-weight: 500;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 13.3px;
+  background-color: #fff;
+  border-radius: 5px;
+  outline: none;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 15px;
 }
 
 .credit-card-number-wrapper, .expiration-date-wrapper{

@@ -402,8 +402,15 @@ footer {
     margin: 1.5rem auto 1.5rem auto;
 }
 
+#travel-day {
+    width: 19.3rem;
+    height: 3.5rem;
+    padding: .5rem 1rem .5rem 1rem;
+    box-sizing: border-box;
+}
+
 .travel-time-wrapper {
-    border: none
+    border: none;
 }
 
 .travel-time-wrapper > input[type="radio"] {
@@ -414,7 +421,7 @@ footer {
   .travel-time-wrapper > input[type="radio"] + label {
     position: relative; /* 確保 label 相對定位 */
     padding-left: 2.4rem; /* 調整 padding 以留出空間給自定義按鈕 */
-    cursor: pointer; /* 指針樣式 */
+    cursor: pointer; 
     margin-right: .5rem
   }
   
@@ -555,6 +562,7 @@ footer {
         display: flex;
         flex-direction: column;
         align-items: center;
+        margin-top: 0;
     }
 
     .images-rotate{
@@ -576,12 +584,13 @@ footer {
 
     .profile {
         margin: auto;
+        width: 100vw;
         max-width: 100vw;
-        width: 100vw
     }
 
     .booking-form-wrapper {
         width: calc(100% - 2rem); 
+        max-width: 100vw;
         box-sizing: border-box;
         margin: 0 1rem; 
     }
@@ -612,6 +621,7 @@ footer {
 
     footer {
         width: 100vw;
+        max-width: 100vw;
     }
 
     .menu > li {

@@ -2,7 +2,7 @@ from fastapi import *
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from typing import List
-from routers import attraction_api, mrts, user, booking_attraction
+from routers import attraction_api, mrts, user, booking_attraction, order
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -27,3 +27,4 @@ app.include_router(attraction_api.router)
 app.include_router(mrts.router)
 app.include_router(user.router)
 app.include_router(booking_attraction.router)
+app.include_router(order.router)

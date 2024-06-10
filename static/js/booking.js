@@ -177,7 +177,6 @@ function handleBookingPlan() {
   bookinPlanBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const jwtToken = sessionStorage.getItem("session");
-    console.log(jwtToken);
     if (jwtToken) {
       const userInfo = await checkLoginStatus(jwtToken);
       if (userInfo) {
@@ -196,9 +195,20 @@ handleBookingPlan();
 
 // main
 
+// fetch APP_ID APP_KEY
+async function fetchAPPIdKey() {
+  const response = await fetch("/api/env");
+  const data = await response.json();
+  return data;
+}
+
 // Tappay
-function tappay() {
-  TPDirect.setupSDK("APP_ID", "APP_KEY", "sandbox");
+async function tappay() {
+  const data = await fetchAPPIdKey();
+  const APP_ID = data.APP_ID;
+  const APP_KEY = data.APP_KEY;
+
+  await TPDirect.setupSDK(APP_ID, APP_KEY, "sandbox");
   let fields = {
     number: {
       // css selector
@@ -342,7 +352,7 @@ function updateBookingInfo() {
             <div class="attraction-name">台北一日遊：<span>${booking.data.attraction.name}</span></div>
             <div class="travel-day">日期：<span>${booking.data.date}</span></div>
             <div class="travel-time">時間：<span>${booking.data.time}</span></div>
-            <div class="travel-fee">費用：<span>新台幣 ${booking.data.price} 元</span></div>
+            <div class="travel-fee">費用：<span>${booking.data.price}</span></div>
             <div class="travel-position">地點：<span>${booking.data.attraction.address}</span></div>
             <img src="/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${booking.data.attraction.id}">
           </div>
@@ -350,7 +360,7 @@ function updateBookingInfo() {
         `;
           container.insertAdjacentHTML("beforeend", html);
         });
-        price.textContent = `新台幣 ${totalPrice} 元`;
+        price.textContent = `${totalPrice}`;
         deleteBooking(); // 重新綁定刪除按鈕的事件處理器
       } else {
         attractionBookingNumber.textContent = 0;
@@ -424,7 +434,7 @@ async function userBookings() {
       `;
       container.insertAdjacentHTML("beforeend", html);
     });
-    price.textContent = `新台幣 ${totalPrice} 元`;
+    price.textContent = `${totalPrice}`;
     deleteBooking(); // 重新綁定刪除按鈕的事件處理器
   } else {
     const noBookingMessage = document.querySelector(".no-booking-message");
@@ -476,18 +486,25 @@ function checkFormsValidity() {
           alert("get prime error " + result.msg);
           return;
         }
-        const price = document.querySelector(".price > span");
+        const price = document.querySelector(".price > span").textContent;
         const attractionsInfo = document.querySelectorAll(
           ".booking-attraction-info-wrapper"
         );
         const trip = [];
         attractionsInfo.forEach((attractionInfo) => {
           let id = attractionInfo.dataset.attraction;
-          let name = attractionInfo.querySelector(".attraction-name > span");
-          let address = attractionInfo.querySelector(".travel-position > span");
+          let name = attractionInfo.querySelector(
+            ".attraction-name > span"
+          ).textContent;
+          let address = attractionInfo.querySelector(
+            ".travel-position > span"
+          ).textContent;
           let image = attractionInfo.querySelector(".booking-image > img").src;
-          let date = attractionInfo.querySelector(".travel-day > span");
-          let time = attractionInfo.querySelector(".travel-time > span");
+          let date =
+            attractionInfo.querySelector(".travel-day > span").textContent;
+          let time = attractionInfo.querySelector(
+            ".travel-time > span"
+          ).textContent;
           let attraction = {
             attraction: {
               id: id,
@@ -507,7 +524,6 @@ function checkFormsValidity() {
           name: name,
           email: email,
           phone: phone,
-          contact: contact,
         };
 
         let request = {
@@ -515,8 +531,8 @@ function checkFormsValidity() {
           order: {
             price: price,
             trip: trip,
-            contact: contact,
           },
+          contact: contact,
         };
 
         const data = await bookingOrderSuccess(request, jwtToken);
