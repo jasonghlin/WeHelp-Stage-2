@@ -577,6 +577,7 @@ footer {
     .profile {
         margin: auto;
         max-width: 100vw;
+        width: 100vw
     }
 
     .booking-form-wrapper {
