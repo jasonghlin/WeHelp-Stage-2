@@ -14,7 +14,7 @@ const toRegisterLink = document.querySelector(".to-register-link");
 const toLoginLink = document.querySelector(".to-login-link");
 const footer = document.querySelector("footer");
 const logo = document.querySelector(".logo");
-
+const jwtToken = sessionStorage.getItem("session");
 logo.addEventListener("click", () => {
   window.location = "/";
 });
@@ -196,15 +196,20 @@ handleBookingPlan();
 // main
 
 // fetch APP_ID APP_KEY
-async function fetchAPPIdKey() {
-  const response = await fetch("/api/env");
+async function fetchAPPIdKey(token) {
+  const response = await fetch("/api/env", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   const data = await response.json();
   return data;
 }
 
 // Tappay
 async function tappay() {
-  const data = await fetchAPPIdKey();
+  const data = await fetchAPPIdKey(jwtToken);
   const APP_ID = data.APP_ID;
   const APP_KEY = data.APP_KEY;
 
@@ -277,7 +282,7 @@ async function tappay() {
 tappay();
 
 // check login status
-const jwtToken = sessionStorage.getItem("session");
+
 let user_info;
 function checkLogin() {
   if (!jwtToken) {
@@ -460,8 +465,8 @@ async function bookingOrderSuccess(request, token) {
     const message = `An error has occurred: ${response.statusText}`;
     throw new Error(message);
   }
-
-  return await response.json();
+  let data = await response.json();
+  return data;
 }
 
 // check 2 forms
@@ -534,11 +539,12 @@ function checkFormsValidity() {
           },
           contact: contact,
         };
-
+        console.log(request);
         const data = await bookingOrderSuccess(request, jwtToken);
-        if (data.ok && data.data) {
+        console.log(data);
+        if (data.data) {
           alert("訂單建立成功！");
-          window.location.href = "/thankyou?number=" + data.data.order_number;
+          window.location.href = "/thankyou?number=" + data.data.number;
         } else {
           alert("訂單建立失敗: " + data.message);
         }

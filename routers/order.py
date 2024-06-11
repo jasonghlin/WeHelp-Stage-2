@@ -1,7 +1,7 @@
 from fastapi import *
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from database import create_db_order, fetch_db_user_booking
+from database import create_db_order_contact, fetch_db_user_booking
 from starlette import status
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
@@ -14,6 +14,7 @@ from typing import List
 from dotenv import load_dotenv
 import os
 import requests
+import random
 
 load_dotenv()
 
@@ -46,8 +47,19 @@ class Order(BaseModel):
     order: OrderDetails
     contact: Contact
 
+class Payment(BaseModel):
+    status: int
+    message: str
+
+class OrderResponseDetail(BaseModel):
+    number: int 
+    payment: Payment
+
+class OrderResponse(BaseModel):
+    data: OrderResponseDetail
+
 def create_order_number():
-    pass
+    return random.randint(0, 100000000)
 
 
 @router.get("/api/env")
@@ -88,14 +100,22 @@ async def create_order(order_request: Order, token: str = Depends(oauth2_scheme)
         try:
             tappay_response = requests.post(URL, json=data, headers=headers)
             result = tappay_response.json()
+            user_id = payload.get("id")
+            booking_info = fetch_db_user_booking(user_id)
+            booking_id = [info.get("id") for info in booking_info]
             if result.get("status") == 0:
-                user_id = payload.get("id")
-                # 缺 booking id
-                create_db_order(order_number, result.get("status"), order_request.order.price, booking_id, user_id)
-        except Exception:
-            print(Exception)
-        
-        return {"ok": True}
+                db_result = create_db_order_contact(order_number, result.get("status"), order_request.order.price, booking_id, user_id, order_request.contact)
+
+                if db_result:
+                    return (OrderResponse(data = OrderResponseDetail(number = order_number, payment = Payment(status = result.get("status"), message = "付款成功"))))
+                else: return ErrorResponse(error = True, message = f"訂單建立失敗，輸入不正確或其他原因")
+            else:
+                db_result = create_db_order_contact(order_number, result.get("status"), order_request.order.price, booking_id, user_id, order_request.contact)
+                if db_result:
+                    return (OrderResponse(data = OrderResponseDetail(number = order_number, payment = Payment(status = result.get("status"), message = "尚未付款"))))
+                else: return ErrorResponse(error = True, message = f"訂單建立失敗，輸入不正確或其他原因")
+        except Exception as e: 
+            print(e)
     else:
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
