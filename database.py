@@ -229,7 +229,9 @@ def create_orders_table():
         create_table_query = """
             CREATE TABLE IF NOT EXISTS orders(
                 id INT PRIMARY KEY AUTO_INCREMENT,
-                prime INT,
+                number INT,
+                status INT,
+                price INT,
                 booking_id INT,
                 user_id INT,
                 Foreign Key(booking_id) References bookings(id),
@@ -330,3 +332,33 @@ def delete_db_booking(attraction_id):
     finally:
         db.close()
         db_connection.close()
+
+# create contact table
+def create_contact_table():
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        db.execute("USE taipei_day_trip")
+        create_table_query = """
+            CREATE TABLE IF NOT EXISTS contact(
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                order_id INT,
+                name VARCHAR(50),
+                email VARCHAR(255),
+                phone VARCHAR(50),
+                Foreign Key(order_id) References orders(id)
+            )
+"""
+        db.execute(create_table_query)
+    except Exception as e:
+        logging.error("Error when creating user table: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+create_contact_table()
+
+# create new order
+def create_db_order(order_number, status, price, booking_id, user_id):
+    pass

@@ -93,8 +93,8 @@ def verify_token(token: str):
 @router.get("/api/user/auth", status_code=status.HTTP_200_OK, response_model = LoginStatus,  summary="取得當前登入的會員資訊")
 async def get_user_status(token: str = Depends(oauth2_scheme)):
     payload = verify_token(token)
-    print(payload)
-    return LoginStatus(data = payload)
+    # print(payload)
+    return LoginStatus(data = LoginStatusResponse(id = payload.get("id"), name = payload.get("name"), email=payload.get("sub")))
 
 
 def create_access_token(user_id: int, name: str, email: str, expires_delta: timedelta):

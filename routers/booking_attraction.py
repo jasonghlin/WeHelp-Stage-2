@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List
-from database import create_db_booking, fetch_db_user_booking, delete_db_booking
+from database import create_db_booking, fetch_db_user_booking, delete_db_booking, fetch_db_user_booking
 from datetime import date
 from routers.user import bcrypt_context, SECRET_KEY, ALGORITHM, verify_token, SuccessResponse, ErrorResponse
 import json
