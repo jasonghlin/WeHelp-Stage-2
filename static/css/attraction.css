@@ -287,8 +287,14 @@ footer {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: all .3s;
+    transition: all 1.5s ease-in-out;
+    border-radius: .5rem;
+    opacity: 0;
     
+}
+
+.images > .img--active {
+    opacity: 1;
 }
 
 .dots {
@@ -351,19 +357,6 @@ footer {
     cursor: pointer;
 }
 
-.images > img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: .5rem;
-    opacity: 0;
-    transition: all 1.5s ease-in-out;
-}
-
-.images > .img--active {
-    opacity: 1;
-}
-
 .attraction-name {
     font-weight: 700;
     font-size: 2.4rem;
@@ -400,6 +393,12 @@ footer {
 
 .travel-day-wrapper {
     margin: 1.5rem auto 1.5rem auto;
+}
+
+.travel-day-label, .travel-time-label, .travel-fee {
+    font-weight: 700;
+    font-size: 1.6rem;
+    line-height: 1.33rem;
 }
 
 #travel-day {
@@ -460,11 +459,15 @@ footer {
     background-color: #448899; /* 自定義顏色 */
   }
 
-.travel-fee {
+
+  .travel-fee {
     margin: 1.5rem auto 1.5rem auto;
 
 }
 
+.twd, .fee {
+    font-weight: 400;
+}
 .booking-form-wrapper > form > button{
     font-size: 1.9rem;
     padding: 1rem 2rem 1rem 2rem;
@@ -473,6 +476,7 @@ footer {
     border: none;
     border-radius: .5rem;
     cursor: pointer;
+    margin-top: 2.5rem;
 }
 
 .hr-2 {

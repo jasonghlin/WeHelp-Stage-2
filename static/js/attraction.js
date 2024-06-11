@@ -236,7 +236,7 @@ async function createPage() {
         <input type="radio" name="travel-time" id="afternoon" value="下半天" required>
         <label for="afternoon" class="afternoon-label">下半天</label>
       </div>
-      <p class="travel-fee">導覽費用：新台幣<span class="fee">2000</span>元</p>
+      <p class="travel-fee">導覽費用：<span class="twd">新台幣 <span class="fee">2000</span> 元</span></p>
       <button class="booking-btn" type="submit">開始預約行程</button>
     </form>
   `;
@@ -279,7 +279,7 @@ async function createPage() {
 
 createPage();
 
-// image slider
+// image slider https://ithelp.ithome.com.tw/articles/10301221
 function imageSlider() {
   const imagesContainer = document.querySelector(".images");
 
@@ -300,49 +300,81 @@ function imageSlider() {
   const slides = document.querySelectorAll(".images > img");
   const leftBtn = document.querySelector(".left-arrow");
   const rightBtn = document.querySelector(".right-arrow");
-  let currentSlide = 0;
-  const maxSlide = slides.length;
 
-  function goToSlide(currentSlide) {
-    slides.forEach((slide, index) => {
-      slide.style.transform = `translateX(${100 * (index - currentSlide)}%)`;
-    }); // currentSide = 1; -100%, 0%, 100%, 200%
+  function createClonedSlides() {
+    const firstSlideClone = slides[0].cloneNode(true);
+    const lastSlideClone = slides[slides.length - 1].cloneNode(true);
+
+    imagesContainer.appendChild(firstSlideClone);
+    imagesContainer.insertBefore(lastSlideClone, slides[0]);
+
+    return [firstSlideClone, lastSlideClone];
+  }
+  // 複製最前面與最後面的圖片
+  const [firstSlideClone, lastSlideClone] = createClonedSlides();
+  const slidesWithClones = document.querySelectorAll(".images > img");
+  let currentSlide = 1;
+  const maxSlide = slidesWithClones.length - 2;
+
+  function goToSlide(slideIndex, transition = true) {
+    slidesWithClones.forEach((slide, index) => {
+      if (!transition) {
+        slide.style.transition = "none";
+      } else {
+        slide.style.transition = "";
+      }
+      slide.style.transform = `translateX(${100 * (index - slideIndex)}%)`;
+      slide.style.opacity = index === slideIndex ? "1" : "0";
+    });
   }
 
   function nextSlide() {
-    if (currentSlide === maxSlide - 1) {
-      currentSlide = 0;
+    currentSlide++;
+    if (currentSlide === maxSlide + 1) {
+      goToSlide(currentSlide);
+      setTimeout(() => {
+        currentSlide = 1;
+        goToSlide(currentSlide, false);
+      }, 1500); //  match css transition setting
     } else {
-      currentSlide++;
+      goToSlide(currentSlide);
     }
-
-    goToSlide(currentSlide);
     activateDot(currentSlide);
-    activeSlide(currentSlide);
   }
 
   function prevSlide() {
-    if (currentSlide === 0) {
-      currentSlide = maxSlide - 1;
+    currentSlide--;
+    if (currentSlide < 0) {
+      currentSlide = maxSlide;
+      goToSlide(currentSlide, false);
+      setTimeout(() => {
+        currentSlide--;
+        goToSlide(currentSlide, true);
+      }, 1500); // match css transition setting
+    } else if (currentSlide === 0) {
+      // 處理 current slide 是 0 的狀況
+      goToSlide(currentSlide);
+      setTimeout(() => {
+        currentSlide = maxSlide;
+        goToSlide(currentSlide, false);
+      }, 1500); // match css transition setting
     } else {
-      currentSlide--;
+      goToSlide(currentSlide);
     }
-    goToSlide(currentSlide);
     activateDot(currentSlide);
-    activeSlide(currentSlide);
   }
 
-  function activeSlide(slide) {
-    slides.forEach((slide) => {
+  function activeSlide(slideIndex) {
+    slidesWithClones.forEach((slide) => {
       slide.classList.remove("img--active");
     });
-    document
-      .querySelector(`.images > img[data-slide="${slide}"]`)
-      .classList.add("img--active");
+    const activeSlide = document.querySelector(
+      `.images > img[data-slide="${slideIndex}"]`
+    );
+    if (activeSlide) {
+      activeSlide.classList.add("img--active");
+    }
   }
-
-  goToSlide(0);
-  activeSlide(0);
 
   // go to next slide
   leftBtn.addEventListener("click", prevSlide);
@@ -364,27 +396,39 @@ function imageSlider() {
       );
     });
   }
-  createDots();
-  activateDot(0);
 
-  function activateDot(slide) {
-    document.querySelectorAll(".dots__dot").forEach((dot) => {
+  function activateDot(slideIndex) {
+    const dots = document.querySelectorAll(".dots__dot");
+    dots.forEach((dot) => {
       dot.classList.remove("dots__dot--active");
     });
-
-    document
-      .querySelector(`.dots__dot[data-slide="${slide}"]`)
-      .classList.add("dots__dot--active");
+    // Adjust dot index for clones
+    let dotIndex = slideIndex - 1;
+    if (slideIndex === 0) {
+      dotIndex = dots.length - 1;
+    } else if (slideIndex === maxSlide + 1) {
+      dotIndex = 0;
+    }
+    if (dots[dotIndex]) {
+      dots[dotIndex].classList.add("dots__dot--active");
+    }
   }
 
   dotContainer.addEventListener("click", (e) => {
     if (e.target.classList.contains("dots__dot")) {
       const { slide } = e.target.dataset;
-      goToSlide(slide);
-      activateDot(slide);
-      activeSlide(slide);
+      currentSlide = parseInt(slide) + 1;
+      goToSlide(currentSlide);
+      activateDot(currentSlide);
+      activeSlide(currentSlide);
     }
   });
+
+  goToSlide(currentSlide);
+  goToSlide(currentSlide);
+  createDots();
+  activateDot(currentSlide);
+  activeSlide(currentSlide);
 }
 
 imageSlider();
