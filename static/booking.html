@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.18.0"></script>
 </head>
 
 <body>
@@ -21,54 +22,59 @@
       </ul>
     </nav>
   </header>
-
-  <div class="overlay hidden"></div>
-  <div class="modal-container hidden">
-    <div class="modal-content">
-      <!-- 登入表單 -->
-      <div class="login-container hidden">
-        <div class="gradient-bar"></div>
-        <form action="" class="login-form">
-          <div class="login-form-exit form-exit">
-            <img src="/static/images/form-delete.png" alt="from-exit">
-          </div>
-          <h3>登入會員帳號</h3>
-          <input id="login-email" class="form-input" type="email" placeholder="輸入電子信箱" required>
-          <input id="login-password" class="form-input" type="password" placeholder="輸入密碼" required>
-          <button>登入帳戶</button>
-          <div class="to-register-wrapper">
-            <div>還沒有帳戶? </div>
-            <div class="to-register-link">點此註冊</div>
-          </div>
-        </form>
-      </div>
-      <!-- 註冊表單 -->
-      <div class="register-container hidden">
-        <div class="gradient-bar"></div>
-        <form action="" class="register-form">
-          <div class="register-form-exit form-exit">
-            <img src="/static/images/form-delete.png" alt="from-exit">
-          </div>
-          <h3>註冊會員帳號</h3>
-          <input id="register-name" class="form-input" type="text" placeholder="輸入姓名" name="register-name" required>
-          <input id="register-email" class="form-input" type="email" placeholder="輸入電子郵件" name="register-email"
-            required>
-          <input id="register-password" class="form-input" type="password" placeholder="輸入密碼" name="register-password"
-            required>
-          <button class="register-btn" type="submit">註冊新帳戶</button>
-          <div class="to-login-wrapper">
-            <div>已經有帳戶了? </div>
-            <div class="to-login-link">登入</div>
-          </div>
-        </form>
+  <hr class="hr-1">
+  <main>
+    <div class="overlay hidden"></div>
+    <div class="modal-container hidden">
+      <div class="modal-content">
+        <!-- 登入表單 -->
+        <div class="login-container hidden">
+          <div class="gradient-bar"></div>
+          <form action="" class="login-form">
+            <div class="login-form-exit form-exit">
+              <img src="/static/images/form-delete.png" alt="from-exit">
+            </div>
+            <h3>登入會員帳號</h3>
+            <input id="login-email" class="form-input" type="email" placeholder="輸入電子信箱" required>
+            <input id="login-password" class="form-input" type="password" placeholder="輸入密碼" required>
+            <button>登入帳戶</button>
+            <div class="to-register-wrapper">
+              <div>還沒有帳戶? </div>
+              <div class="to-register-link">點此註冊</div>
+            </div>
+          </form>
+        </div>
+        <!-- 註冊表單 -->
+        <div class="register-container hidden">
+          <div class="gradient-bar"></div>
+          <form action="" class="register-form">
+            <div class="register-form-exit form-exit">
+              <img src="/static/images/form-delete.png" alt="from-exit">
+            </div>
+            <h3>註冊會員帳號</h3>
+            <input id="register-name" class="form-input" type="text" placeholder="輸入姓名" name="register-name" required>
+            <input id="register-email" class="form-input" type="email" placeholder="輸入電子郵件" name="register-email"
+              required>
+            <input id="register-password" class="form-input" type="password" placeholder="輸入密碼" name="register-password"
+              required>
+            <button class="register-btn" type="submit">註冊新帳戶</button>
+            <div class="to-login-wrapper">
+              <div>已經有帳戶了? </div>
+              <div class="to-login-link">登入</div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
 
-  <hr class="hr-1">
-  <div class="booking-info-container">
-    <div class="booking-welcome">您好，<span class="user-name">Yakko</span>，待預定的行程如下：</div>
-    <div class="booking-attraction-info-wrapper">
+
+    <!-- 基本單位 -->
+    <div class="booking-info-container-wrapper">
+      <div class="booking-welcome">您好，<span class="user-name"></span>，待預定的行程如下，總共<span
+          class="attraction-booking-number">0</span>個景點：</div>
+      <div class="no-booking-message hidden">目前沒有任何待預訂的行程</div>
+      <div class="booking-info-container">
+        <!-- <div class="booking-attraction-info-wrapper">
       <div class="booking-image">
         <img src="https://www.travel.taipei/d_upload_ttn/sceneadmin/pic/11000848.jpg" alt="">
       </div>
@@ -80,48 +86,52 @@
         <div class="travel-position">地點：<span>臺北市 大安區忠孝東路4段</span></div>
         <img src="/static/images/deletetrash.png" alt="delete-icon">
       </div>
+    </div> -->
+      </div>
     </div>
-  </div>
-  <hr class="hr-2">
-  <div class="user-info-container">
-    <div class="user-info-title">您的聯絡資訊</div>
-    <div class="user-name">
-      <label for="name">聯絡姓名：</label>
-      <input type="text" id="name" required>
+    <div class="section2-container hidden">
+      <hr class="hr-2">
+      <form class="user-info-container">
+        <div class="user-info-title">您的聯絡資訊</div>
+        <div class="user-name">
+          <label for="name">聯絡姓名：</label>
+          <input type="text" id="name" required>
+        </div>
+        <div class="user-email">
+          <label for="email">聯絡信箱：</label>
+          <input type="email" id="email" required>
+        </div>
+        <div class="user-phone">
+          <label for="phone">手機號碼：</label>
+          <input type="tel" id="phone" required>
+        </div>
+        <div class="reminder">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</div>
+      </form>
+      <hr class="hr-3">
+      <form class="credit-card-container">
+        <div class="credi-card-info-title">信用付款資訊</div>
+        <div class="credit-card-number-wrapper">
+          <label for="credit-card-number">卡片號碼：</label>
+          <div id="credit-card-number" class="tpfield input-system"></div>
+        </div>
+        <div class="expiration-date-wrapper">
+          <label for="expiration-date">過期時間：</label>
+          <div id="expiration-date" class="tpfield input-system"></div>
+        </div>
+        <div class="cvv-wrapper">
+          <label for="cvv">驗證密碼：</label>
+          <div id="card-cvv" class="tpfield input-system"></div>
+        </div>
+      </form>
+      <hr class="hr-4">
+      <div class="final-confirm-container">
+        <div class="price">總價：新台幣<span>0</span>元</div>
+        <button class="final-confirm-btn">確認訂購並付款</button>
+      </div>
     </div>
-    <div class="user-email">
-      <label for="email">聯絡信箱：</label>
-      <input type="email" id="email" required>
-    </div>
-    <div class="user-phone">
-      <label for="phone">手機號碼：</label>
-      <input type="tel" id="phone" required>
-    </div>
-    <div class="reminder">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</div>
-  </div>
-  <hr class="hr-3">
-  <div class="credit-card-container">
-    <div class="credi-card-info-title">信用付款資訊</div>
-    <div class="credit-card-number-wrapper">
-      <label for="credit-card-number">卡片號碼：</label>
-      <input id="credit-card-number" type="text" inputmode="numeric" pattern="[0-9\s]{13,19}" autocomplete="cc-number"
-        maxlength="16" placeholder="**** **** **** ****" required>
-    </div>
-    <div class="expiration-date-wrapper">
-      <label for="expiration-date">過期時間：</label>
-      <input id="expiration-date" type="text" placeholder="MM / YY">
-    </div>
-    <div class="cvv-wrapper">
-      <label for="cvv">驗證密碼：</label>
-      <input class="cvv" placeholder="CVV" type="text" maxlength="3" required />
-    </div>
-  </div>
-  <hr class="hr-4">
-  <div class="final-confirm-container">
-    <div class="price">總價：<span>新台幣 2000 元</span></div>
-    <button class="final-confirm-btn">確認訂購並付款</button>
-  </div>
+  </main>
   <footer></footer>
+  <script type="module" src="/static/js/booking.js"></script>
 </body>
 
 </html>

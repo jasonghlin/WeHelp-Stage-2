@@ -47,8 +47,13 @@ class ErrorResponse(BaseModel):
     error: bool
     message: str
 
+class LoginStatusResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+
 class LoginStatus(BaseModel):
-    data: dict
+    data: LoginStatusResponse
 
 @router.post("/api/user", status_code=status.HTTP_200_OK, summary="註冊一個新的會員", responses={200: {"model": SuccessResponse}, 400: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
 async def create_user(create_user_request: CreateUserRequest):
@@ -76,7 +81,6 @@ async def create_user(create_user_request: CreateUserRequest):
 
 def verify_token(token: str):
     try:
-        # 验证并解码 JWT
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError:
@@ -86,11 +90,11 @@ def verify_token(token: str):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-@router.get("/api/user/auth", response_model = LoginStatus)
+@router.get("/api/user/auth", status_code=status.HTTP_200_OK, response_model = LoginStatus,  summary="取得當前登入的會員資訊")
 async def get_user_status(token: str = Depends(oauth2_scheme)):
     payload = verify_token(token)
-    print(payload)
-    return LoginStatus(data = payload)
+    # print(payload)
+    return LoginStatus(data = LoginStatusResponse(id = payload.get("id"), name = payload.get("name"), email=payload.get("sub")))
 
 
 def create_access_token(user_id: int, name: str, email: str, expires_delta: timedelta):
@@ -107,5 +111,5 @@ async def login_for_access_token(user_login_request: UserLoginRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"error": True, "message": "登入失敗，帳號或密碼錯誤"}
         )
-    token = create_access_token(user.get("email"), user.get("id"), user.get("name"), timedelta(days=7))
+    token = create_access_token(user.get("id"), user.get("name"), user.get("email"), timedelta(days=7))
     return SuccessResponseToken(token = token)

@@ -5,6 +5,7 @@ const loginEmailInput = document.querySelector("#login-email");
 const loginEmailPassword = document.querySelector("#login-password");
 const loginErrorDiv = document.querySelector(".login-error-message");
 const registerForm = document.querySelector(".register-container");
+const registerErrorDiv = document.querySelector(".register-error-message");
 const loginExit = document.querySelector(".login-form-exit");
 const registerExit = document.querySelector(".register-form-exit");
 const overlay = document.querySelector(".overlay");
@@ -79,6 +80,7 @@ function handleRegister() {
     if (!response.ok) {
       const errorData = await response.json();
       console.error("Error:", errorData);
+      registerErrorDiv.textContent = errorData.message;
     } else {
       const data = await response.json();
       console.log("Success:", data);
@@ -143,7 +145,7 @@ function handleLogin() {
 
 handleLogin();
 
-// token verify
+// token verify, check login status
 async function checkLoginStatus(token) {
   const response = await fetch("/api/user/auth", {
     method: "GET",
@@ -152,7 +154,13 @@ async function checkLoginStatus(token) {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(response);
+  console.log("Response status:", response.status); // 新增這一行
+
+  if (!response.ok) {
+    console.error("Error:", response.statusText);
+    // modalControl("block");
+    return false;
+  }
   const data = await response.json();
   if (data) {
     console.log(data);
@@ -169,11 +177,12 @@ function handleBookingPlan() {
   bookinPlanBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const jwtToken = sessionStorage.getItem("session");
+    console.log(jwtToken);
     if (jwtToken) {
       const userInfo = await checkLoginStatus(jwtToken);
-      console.log(userInfo);
       if (userInfo) {
         window.location.href = "/booking";
+        console.log("ok");
       } else {
         modalControl("block");
       }
@@ -184,6 +193,7 @@ function handleBookingPlan() {
 }
 
 handleBookingPlan();
+
 // main
 
 function createElementWithClass(element, className) {
@@ -230,13 +240,13 @@ async function listBar() {
 
   document.querySelector(".prev-btn").addEventListener("click", function () {
     const mrtList = document.querySelector(".mrt-list");
-    // 每次點擊滾動左移 300px
+    // 每次點擊滾動左移 800px
     mrtList.scrollLeft -= 800;
   });
 
   document.querySelector(".next-btn").addEventListener("click", function () {
     const mrtList = document.querySelector(".mrt-list");
-    // 每次點擊滾動右移 300px
+    // 每次點擊滾動右移 800px
     mrtList.scrollLeft += 800;
   });
 
