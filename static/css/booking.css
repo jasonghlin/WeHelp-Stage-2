@@ -300,13 +300,14 @@ footer {
 }
 
 .booking-image {
-    width: 20rem;
-    height: 25rem;
+    width: 25rem;
+    height: 20rem;
     margin-right: 3rem;
 }
 
 .booking-image > img {
     width: 100%;
+    /* height: 100%; */
     object-fit: cover;
 }
 
@@ -425,12 +426,17 @@ footer {
     align-items: center;
 }
 
+.credit-card-number-wrapper > label, .expiration-date-wrapper > label, .cvv-wrapper > label {
+    margin-bottom: 1.5rem;
+}
+
 .tpfield {
     width: 20rem;
     height: 38px;
     /* margin: 5px 0; */
     padding: 1px;
     box-sizing: border-box;
+    margin-bottom: 0;
 }
 
 .input-system {
@@ -446,9 +452,9 @@ footer {
   margin-bottom: 15px;
 }
 
-.credit-card-number-wrapper, .expiration-date-wrapper{
+/* .credit-card-number-wrapper, .expiration-date-wrapper{
     margin-bottom: 1.5rem;
-}
+} */
 
 .final-confirm-container {
     width: 98rem;

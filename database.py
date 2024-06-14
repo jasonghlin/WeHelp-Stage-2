@@ -319,7 +319,7 @@ def delete_db_booking(attraction_id):
     try:
         db_connection = get_db_connection()
         db = db_connection.cursor(dictionary = True)
-        delete_query = "DELETE FROM bookings WHERE attraction_id = %s"
+        delete_query = "DELETE FROM bookings WHERE id IN (SELECT sub_query.id FROM (SELECT bookings.id FROM bookings LEFT JOIN orders_bookings_relation ON bookings.id = orders_bookings_relation.booking_id WHERE orders_bookings_relation.order_id IS NULL AND bookings.attraction_id = %s) AS sub_query)"
         delete_val = (attraction_id, )
         db.execute(delete_query, delete_val)
         db_connection.commit()
@@ -393,7 +393,7 @@ def create_db_order_contact(order_number, status, price, booking_id, user_id, co
         db.execute(order_query, val)
         db_connection.commit()
         order_id = db.lastrowid
-        print(booking_id)
+        # print(booking_id)
         for id in booking_id:
             print(id)
             orders_bookings_relation_query = ("INSERT INTO orders_bookings_relation(order_id, booking_id) VALUES(%s, %s)")
@@ -414,5 +414,33 @@ def create_db_order_contact(order_number, status, price, booking_id, user_id, co
         db_connection.close()
 
 
-def create_db_contact():
-    pass
+
+
+def get_db_order_info(user_id, order_id):
+    try: 
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        booking_query = ("""
+            SELECT orders.user_id, orders.number, orders.price, orders.status, bookings.date, bookings.time, contact.name, contact.email, contact.phone, attractions.id AS attraction_id, attractions.name AS attraction_name, attractions.address, attractions.images
+            FROM orders
+            LEFT JOIN contact on orders.id = contact.order_id
+            LEFT JOIN orders_bookings_relation ON orders.id = orders_bookings_relation.order_id
+            LEFT JOIN bookings ON orders_bookings_relation.booking_id = bookings.id
+            LEFT JOIN attractions ON bookings.attraction_id = attractions.id
+            WHERE orders.user_id = %s AND orders.id = %s
+""")
+        # print(user.email)
+        val = (user_id, order_id)
+        db.execute(booking_query, val)
+        result = db.fetchall()
+        # print(result)
+        if result:
+            return result
+        else:
+            return {}
+    except Exception as e:
+        logging.error("Error when get user order: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
