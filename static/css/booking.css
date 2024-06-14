@@ -20,7 +20,7 @@ body {
 }
 
 header {
-    width: 100%;
+    /* width: 100%; */
     position: fixed;
     background-color: rgba(255, 255, 255, 0.95);
     z-index: 20;
@@ -82,6 +82,7 @@ nav {
     justify-content: center;
     /* align-items: center;  */
     z-index: 10; 
+    margin: auto;
 }
 
 .modal-content {
@@ -244,6 +245,7 @@ nav {
 
 footer {
     width: 100%;
+    max-width: 100%;
     height: 10.4rem;
     display: flex;
     justify-content: center;
@@ -253,6 +255,12 @@ footer {
     color: white;
     margin-top: auto;
     flex-grow: 1;
+    box-sizing: border-box;
+}
+
+footer > * {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* main */
@@ -272,7 +280,7 @@ footer {
 
 .booking-info-container-wrapper {
     width: 98rem;
-    height: 20rem;
+    /* height: 20rem; */
     font-size: 1.9rem;
     line-height: 1.6rem;
     color: #666666;
@@ -311,11 +319,11 @@ footer {
     object-fit: cover;
 }
 
-.booking-attraction-info > img {
+.delete-icon {
     position: absolute;
     width: 3rem;
-    top: 0;
     right: 0;
+    bottom: 80%;
     cursor: pointer;
 }
 
@@ -489,73 +497,82 @@ footer {
     display: none
 }
 
-@media (min-width: 360px) and (max-width:1200px) {
-    nav {
-        max-width: 90vw
-    }
-
-    .booking-info-container-wrapper {
-        max-width: 90vw;
-    }
-
-    .section2-container {
-        max-width: 90vw;
-    }
-
-    .reminder {
-        line-height: 2.317rem;
-    }
-
-    .travel-position > span {
-        line-height: 2.317rem;
-    }
-
-    .no-booking-message {
-        max-width: 90vw;
-    }
-}
-
-    .booking-attraction-info-wrapper {
-        max-width: 90vw;
-    }
-
-    .booking-info-container {
-        max-width: 90vw;
-    }
-
-    .hr-2, .hr-3, .hr-4 {
-        max-width: 90vw;
-    }
-
-    .final-confirm-container {
-        max-width: 90vw;
-    }
-
-    .main{
+@media (min-width: 600px) and (max-width:1200px) {
+    html {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
     }
-
-    .user-info-container {
-        max-width: 90vw;
-    }
-
-    .credit-card-container {
-        max-width: 90vw;
-    }
-@media (min-width: 360px) and (max-width:600px){
-    nav {
-        max-width: 95vw;
+    body{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 95vw;
+        max-width: 95vw
     }
     
-    .menu > li {
-        list-style: none;
-        margin-left: 0;
-        cursor: pointer;
-        color: #666;
-        padding: 1rem;
-        font-weight: 500;
+    nav, .booking-info-container-wrapper, .booking-info-container, .user-info-container, .credit-card-container, .final-confirm-container, footer, .hr-1, .hr-2, .hr-3, .hr-4 {
+        width: 95vw;
+        max-width: 95vw;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .travel-position > span, .reminder {
+        line-height: 2rem;
+    }
+}
+
+
+@media (min-width: 360px) and (max-width:600px) {
+    body{
+        margin:0;
+        padding: 0
+    }
+    nav, .user-info-container, .credit-card-container, .final-confirm-container, footer, .hr-1, .hr-2, .hr-3, .hr-4   {
+        width:95vw;
+        max-width: 95vw
+    }
+
+    .booking-welcome {
+        line-height: 2rem;
+    }
+
+    .booking-info-container-wrapper, .booking-info-container {
+        width:95vw;
+        max-width: 95vw
+    }
+
+    .booking-attraction-info-wrapper {
+        flex-direction: column;
+    }
+
+    .booking-info-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .booking-attraction-info-wrapper {
+        width: 100%
+    }
+
+    .booking-image {
+        margin-right: 0;
+        width: 100%;
+        height: 100%;
+        margin-bottom: 3rem;
+    }
+
+    .reminder {
+        line-height: 2rem;
+    }
+
+    .travel-position > span {
+        line-height: 2rem;
+    }
+
+    .delete-icon{
+        bottom: 1rem;
     }
 }

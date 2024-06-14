@@ -195,23 +195,12 @@ handleBookingPlan();
 
 // main
 
-// fetch APP_ID APP_KEY
-async function fetchAPPIdKey(token) {
-  const response = await fetch("/api/env", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const data = await response.json();
-  return data;
-}
-
 // Tappay
 async function tappay() {
-  const data = await fetchAPPIdKey(jwtToken);
-  const APP_ID = data.APP_ID;
-  const APP_KEY = data.APP_KEY;
+  // const data = await fetchAPPIdKey(jwtToken);
+  const APP_ID = 150900;
+  const APP_KEY =
+    "app_yhuFjfOXpbURVThigcQLqf8GfLgF1RM5GLmpvNZYhO0RLZeSgqKglxQscdN4";
 
   await TPDirect.setupSDK(APP_ID, APP_KEY, "sandbox");
   let fields = {

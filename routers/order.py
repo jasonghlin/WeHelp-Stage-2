@@ -71,18 +71,6 @@ class OrderNumberResponse(BaseModel):
 
 def create_order_number():
     return random.randint(0, 100000000)
-
-
-@router.get("/api/env")
-async def get_env(token: str = Depends(oauth2_scheme)):
-    payload = verify_token(token)
-    if payload:
-        return JSONResponse({
-        "APP_ID": os.getenv("APP_ID"),
-        "APP_KEY": os.getenv("APP_KEY")
-    })
-    else:
-        return ErrorResponse(error = True, message = "未登入，拒絕存取")
     
     
 # 補 autherization
