@@ -410,6 +410,8 @@ footer {
     border: none;
     background-color: white;
     color: #000;
+    font-weight: 400;
+    font-size: 1.6rem;
 }
 
 .travel-time-wrapper {
