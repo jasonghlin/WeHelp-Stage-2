@@ -5,7 +5,7 @@ from database import check_db_user, create_db_user, get_user
 from starlette import status
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
-import jwt
+from jose import jwt, JWTError
 from dotenv import load_dotenv
 import os
 from datetime import timedelta, datetime
@@ -83,37 +83,18 @@ def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except jwt.ExpiredSignatureError:
+    except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    except jwt.DecodeError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token decode error",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Token verification failed: {str(e)}",
+            detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
 @router.get("/api/user/auth", status_code=status.HTTP_200_OK, response_model = LoginStatus,  summary="取得當前登入的會員資訊")
 async def get_user_status(token: str = Depends(oauth2_scheme)):
-    if token:
-        payload = verify_token(token)
+    payload = verify_token(token)
     # print(payload)
-        return LoginStatus(data = LoginStatusResponse(id = payload.get("id"), name = payload.get("name"), email=payload.get("sub")))
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No token provided",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    return LoginStatus(data = LoginStatusResponse(id = payload.get("id"), name = payload.get("name"), email=payload.get("sub")))
 
 
 def create_access_token(user_id: int, name: str, email: str, expires_delta: timedelta):

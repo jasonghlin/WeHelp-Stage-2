@@ -78,6 +78,18 @@ nav {
     justify-content: center;
     /* align-items: center;  */
     z-index: 10; 
+    animation: slideInFromTop 0.5s ease-out forwards;
+}
+
+@keyframes slideInFromTop {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .modal-content {

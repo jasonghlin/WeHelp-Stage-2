@@ -30,6 +30,7 @@ function modalControl(param) {
     // gradientBar.classList.remove("hidden");
     loginForm.classList.remove("hidden");
     modalContainer.classList.remove("hidden");
+    modalContainer.style.animation = "slideInFromTop 0.5s ease-out forwards";
   }
 }
 
@@ -45,6 +46,9 @@ toRegisterLink.addEventListener("click", () => {
 });
 
 toLoginLink.addEventListener("click", () => {
+  document.querySelector("#register-name").value = "";
+  document.querySelector("#register-email").value = "";
+  document.querySelector("#register-password").value = "";
   loginForm.classList.remove("hidden");
   registerForm.classList.add("hidden");
 });
@@ -56,6 +60,13 @@ formExit.forEach((el) => {
     loginForm.classList.add("hidden");
     registerForm.classList.add("hidden");
     modalContainer.classList.add("hidden");
+    document.querySelector("#register-name").value = "";
+    document.querySelector("#register-email").value = "";
+    document.querySelector("#register-password").value = "";
+    document.querySelector("#login-email").value = "";
+    document.querySelector("#login-password").value = "";
+    document.querySelector("#loginErrorDiv").textContent = "";
+    document.querySelector("#registerErrorDiv").textContent = "";
   });
 });
 
@@ -79,7 +90,8 @@ function handleRegister() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Error:", errorData);
+      // console.error("Error:", errorData);
+      registerErrorDiv.style.color = "red";
       registerErrorDiv.textContent = errorData.message;
     } else {
       const data = await response.json();
@@ -95,6 +107,10 @@ function handleRegister() {
       registerEmail.value,
       registerPassword.value
     );
+    if (result.ok) {
+      registerErrorDiv.style.color = "green";
+      registerErrorDiv.textContent = "註冊成功";
+    }
   });
 }
 
@@ -104,7 +120,8 @@ function logoutEvent() {
   login.removeEventListener("click", logoutEvent);
   login.textContent = "登入/註冊";
   login.addEventListener("click", loginEvent);
-  sessionStorage.removeItem("session");
+  localStorage.removeItem("session");
+  window.location.reload();
 }
 
 // handle login
@@ -123,15 +140,11 @@ function handleLogin() {
 
     if (!response.ok) {
       const errorData = await response.json();
+      loginErrorDiv.style.color = "red";
       loginErrorDiv.textContent = errorData.message;
     } else {
       const data = await response.json();
-      loginEmailInput.value = "";
-      loginEmailPassword.value = "";
-      modalControl("hidden");
-      login.removeEventListener("click", loginEvent);
-      login.textContent = "登出";
-      login.addEventListener("click", logoutEvent);
+      window.location.reload();
       return data;
     }
   };
@@ -139,7 +152,7 @@ function handleLogin() {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const jwtToken = await loginUser(loginEmail.value, loginPassword.value);
-    sessionStorage.setItem("session", jwtToken.token);
+    localStorage.setItem("session", jwtToken.token);
   });
 }
 
@@ -163,6 +176,12 @@ async function checkLoginStatus(token) {
   }
   const data = await response.json();
   if (data) {
+    loginEmailInput.value = "";
+    loginEmailPassword.value = "";
+    modalControl("hidden");
+    login.removeEventListener("click", loginEvent);
+    login.textContent = "登出系統";
+    login.addEventListener("click", logoutEvent);
     return data;
   } else {
     modalControl("block");
@@ -170,12 +189,20 @@ async function checkLoginStatus(token) {
   }
 }
 
+async function checkStatus() {
+  const jwtToken = localStorage.getItem("session");
+  const userInfo = await checkLoginStatus(jwtToken);
+  return;
+}
+
+checkStatus();
+
 // handle booking plan
 function handleBookingPlan() {
   const bookinPlanBtn = document.querySelector(".menu li:nth-child(1)");
   bookinPlanBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    const jwtToken = sessionStorage.getItem("session");
+    const jwtToken = localStorage.getItem("session");
     if (jwtToken) {
       const userInfo = await checkLoginStatus(jwtToken);
       if (userInfo) {
@@ -457,7 +484,7 @@ function booking() {
   bookingBtn.addEventListener("click", async (e) => {
     // check login status
     e.preventDefault();
-    const jwtToken = sessionStorage.getItem("session");
+    const jwtToken = localStorage.getItem("session");
     if (jwtToken) {
       const userInfo = await checkLoginStatus(jwtToken);
       if (userInfo) {
