@@ -143,6 +143,11 @@ nav {
     margin: .5rem 0 .5rem 0;
     border: 1px solid #ccc;
     box-sizing: border-box;
+    font-size: 1.6rem;
+}
+
+#login-email{
+    margin-top: 1.5rem;
 }
 
 .login-form > h3 {
@@ -207,6 +212,10 @@ nav {
     align-items: center;
     color: #666666;
 
+}
+
+#register-name {
+    margin-top: 1.5rem;
 }
 
 .register-form > button{
