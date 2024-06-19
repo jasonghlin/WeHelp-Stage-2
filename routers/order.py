@@ -1,7 +1,7 @@
 from fastapi import *
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from database import create_db_order_contact, fetch_db_user_booking
+from database import create_db_order_contact, fetch_db_user_booking, get_db_order_info
 from starlette import status
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 import os
 import requests
 import random
+import json
 
 load_dotenv()
 
@@ -28,18 +29,18 @@ class Contact(BaseModel):
     phone: str
 
 class Attraction(BaseModel):
-    id: str
+    id: int
     name: str
     address: str
     image: str
 
 class Trip(BaseModel):
     attraction: Attraction
-    date: str
+    date: date
     time: str
 
 class OrderDetails(BaseModel):
-    price: str
+    price: int
     trip: List[Trip]
 
 class Order(BaseModel):
@@ -58,24 +59,22 @@ class OrderResponseDetail(BaseModel):
 class OrderResponse(BaseModel):
     data: OrderResponseDetail
 
+class OrderNumberResponseDetail(BaseModel):
+    number: int
+    price: int
+    trip: List[Trip]
+    contact: Contact
+    status: int
+
+class OrderNumberResponse(BaseModel):
+    data: OrderNumberResponseDetail
+
 def create_order_number():
     return random.randint(0, 100000000)
-
-
-@router.get("/api/env")
-async def get_env(token: str = Depends(oauth2_scheme)):
-    payload = verify_token(token)
-    if payload:
-        return JSONResponse({
-        "APP_ID": os.getenv("APP_ID"),
-        "APP_KEY": os.getenv("APP_KEY")
-    })
-    else:
-        return ErrorResponse(error = True, message = "未登入，拒絕存取")
     
     
 # 補 autherization
-@router.post("/api/orders")
+@router.post("/api/orders", status_code=status.HTTP_200_OK, responses={200: {"model": OrderResponse}, 400: {"model": ErrorResponse}, 500: {"model": ErrorResponse}}, summary="建立新的訂單，並完成付款程序")
 async def create_order(order_request: Order, token: str = Depends(oauth2_scheme)):
     payload = verify_token(token)
     if payload:
@@ -122,4 +121,29 @@ async def create_order(order_request: Order, token: str = Depends(oauth2_scheme)
             content={"error": True, "message": "未登入系統，拒絕存取"}
         )
     
+
+@router.get("/api/order/{orderNumber}")
+async def get_order_info(orderNumber: int):
+    # payload = verify_token(token)
+    # if payload:
+        trips = []
+        results = get_db_order_info(1, orderNumber)
+        print(results)
+        if results:
+            number = results[0].get("number")
+            price = results[0].get("price")
+            contact = Contact(name=results[0].get("name"), email=results[0].get("email"), phone=results[0].get("phone"))
+            for result in results:
+                images = json.loads(result.get("images"))
+                attraction = Attraction(id = result.get("attraction_id"), name = result.get("attraction_name"), address = result.get("address"), image=f"https://{images[0]}")
+                trip = Trip(attraction = attraction, date=result.get("date"), time = result.get("time"))
+                trips.append(trip)
+            response = OrderNumberResponseDetail(number = number, price = price, trip = trips, contact = contact, status = results[0].get("status"))
+            return OrderNumberResponse(data = response)
+        else: 
+            return ErrorResponse(error = True, message = f"找不到訂單，輸入不正確或其他原因")
+        
+
+
+             
     

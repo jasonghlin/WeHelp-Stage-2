@@ -14,7 +14,7 @@ const toRegisterLink = document.querySelector(".to-register-link");
 const toLoginLink = document.querySelector(".to-login-link");
 const footer = document.querySelector("footer");
 const logo = document.querySelector(".logo");
-const jwtToken = sessionStorage.getItem("session");
+const jwtToken = localStorage.getItem("session");
 logo.addEventListener("click", () => {
   window.location = "/";
 });
@@ -30,6 +30,7 @@ function modalControl(param) {
     // gradientBar.classList.remove("hidden");
     loginForm.classList.remove("hidden");
     modalContainer.classList.remove("hidden");
+    modalContainer.style.animation = "slideInFromTop 0.5s ease-out forwards";
   }
 }
 
@@ -45,6 +46,9 @@ toRegisterLink.addEventListener("click", () => {
 });
 
 toLoginLink.addEventListener("click", () => {
+  document.querySelector("#register-name").value = "";
+  document.querySelector("#register-email").value = "";
+  document.querySelector("#register-password").value = "";
   loginForm.classList.remove("hidden");
   registerForm.classList.add("hidden");
 });
@@ -56,6 +60,13 @@ formExit.forEach((el) => {
     loginForm.classList.add("hidden");
     registerForm.classList.add("hidden");
     modalContainer.classList.add("hidden");
+    document.querySelector("#register-name").value = "";
+    document.querySelector("#register-email").value = "";
+    document.querySelector("#register-password").value = "";
+    document.querySelector("#login-email").value = "";
+    document.querySelector("#login-password").value = "";
+    document.querySelector("#loginErrorDiv").textContent = "";
+    document.querySelector("#registerErrorDiv").textContent = "";
   });
 });
 
@@ -79,7 +90,7 @@ function handleRegister() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Error:", errorData);
+      registerErrorDiv.style.color = "red";
       registerErrorDiv.textContent = errorData.message;
     } else {
       const data = await response.json();
@@ -95,6 +106,10 @@ function handleRegister() {
       registerEmail.value,
       registerPassword.value
     );
+    if (result.ok) {
+      registerErrorDiv.style.color = "green";
+      registerErrorDiv.textContent = "註冊成功";
+    }
   });
 }
 
@@ -104,7 +119,8 @@ function logoutEvent() {
   login.removeEventListener("click", logoutEvent);
   login.textContent = "登入/註冊";
   login.addEventListener("click", loginEvent);
-  sessionStorage.removeItem("session");
+  localStorage.removeItem("session");
+  window.location.reload();
 }
 
 // handle login
@@ -123,15 +139,11 @@ function handleLogin() {
 
     if (!response.ok) {
       const errorData = await response.json();
+      loginErrorDiv.style.color = "red";
       loginErrorDiv.textContent = errorData.message;
     } else {
       const data = await response.json();
-      loginEmailInput.value = "";
-      loginEmailPassword.value = "";
-      modalControl("hidden");
-      login.removeEventListener("click", loginEvent);
-      login.textContent = "登出";
-      login.addEventListener("click", logoutEvent);
+      window.location.reload();
       return data;
     }
   };
@@ -139,7 +151,7 @@ function handleLogin() {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const jwtToken = await loginUser(loginEmail.value, loginPassword.value);
-    sessionStorage.setItem("session", jwtToken.token);
+    localStorage.setItem("session", jwtToken.token);
   });
 }
 
@@ -163,7 +175,12 @@ async function checkLoginStatus(token) {
   }
   const data = await response.json();
   if (data) {
-    console.log(data);
+    loginEmailInput.value = "";
+    loginEmailPassword.value = "";
+    modalControl("hidden");
+    login.removeEventListener("click", loginEvent);
+    login.textContent = "登出系統";
+    login.addEventListener("click", logoutEvent);
     return data;
   } else {
     modalControl("block");
@@ -171,12 +188,20 @@ async function checkLoginStatus(token) {
   }
 }
 
+async function checkStatus() {
+  const jwtToken = localStorage.getItem("session");
+  const userInfo = await checkLoginStatus(jwtToken);
+  return;
+}
+
+checkStatus();
+
 // handle booking plan
 function handleBookingPlan() {
   const bookinPlanBtn = document.querySelector(".menu li:nth-child(1)");
   bookinPlanBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    const jwtToken = sessionStorage.getItem("session");
+    const jwtToken = localStorage.getItem("session");
     if (jwtToken) {
       const userInfo = await checkLoginStatus(jwtToken);
       if (userInfo) {
@@ -195,23 +220,12 @@ handleBookingPlan();
 
 // main
 
-// fetch APP_ID APP_KEY
-async function fetchAPPIdKey(token) {
-  const response = await fetch("/api/env", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const data = await response.json();
-  return data;
-}
-
 // Tappay
 async function tappay() {
-  const data = await fetchAPPIdKey(jwtToken);
-  const APP_ID = data.APP_ID;
-  const APP_KEY = data.APP_KEY;
+  // const data = await fetchAPPIdKey(jwtToken);
+  const APP_ID = 150900;
+  const APP_KEY =
+    "app_yhuFjfOXpbURVThigcQLqf8GfLgF1RM5GLmpvNZYhO0RLZeSgqKglxQscdN4";
 
   await TPDirect.setupSDK(APP_ID, APP_KEY, "sandbox");
   let fields = {
