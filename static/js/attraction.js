@@ -311,14 +311,17 @@ function imageSlider() {
   const imagesContainer = document.querySelector(".images");
 
   data.images.forEach((image, index) => {
+    let urlSuffix = image.split("/").pop();
+    // https://d3u8ez3u55dl9n.cloudfront.net
+
     let html =
       index === 0
         ? `
-    <img src="https://${image}" alt="image-${index}" class="img--active"
+    <img src="https://d3u8ez3u55dl9n.cloudfront.net/${urlSuffix}" alt="image-${index}" class="img--active"
       data-slide="${index}">
 `
         : `
-    <img src="https://${image}" alt="image-${index}" data-slide="${index}">
+    <img src="https://d3u8ez3u55dl9n.cloudfront.net/${urlSuffix}" alt="image-${index}" data-slide="${index}">
 `;
 
     imagesContainer.insertAdjacentHTML("beforeend", html);

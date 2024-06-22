@@ -121,7 +121,7 @@ def create_users_table():
         CREATE TABLE IF NOT EXISTS users(
             id INT PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(50) NOT NULL,
-            email VARCHAR(255) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
             password VARCHAR(255) NOT NULL
         )
     """
@@ -349,7 +349,7 @@ def create_contact_table():
 """
         db.execute(create_table_query)
     except Exception as e:
-        logging.error("Error when creating user table: %s", e, exc_info=True)
+        logging.error("Error when creating contact table: %s", e, exc_info=True)
         return {}
     finally:
         db.close()
@@ -373,7 +373,7 @@ def create_orders_bookings_relation_table():
 """
         db.execute(create_table_query)
     except Exception as e:
-        logging.error("Error when creating user table: %s", e, exc_info=True)
+        logging.error("Error when creating orders_bookings_relation table: %s", e, exc_info=True)
         return {}
     finally:
         db.close()
