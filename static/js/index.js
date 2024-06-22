@@ -306,7 +306,10 @@ function createAttractionElement(data, imgIndex) {
   let attractionImgWrapper = createElementWithClass("div", "image-wrapper");
   let attractionImg = createElementWithClass("img", "attraction-img");
   attractionImg.src = "./static/images/loading.gif";
-  attractionImg.dataset.src = `https://${data.images[0]}`;
+  // attractionImg.dataset.src = `https://${data.images[0]}`;
+  let urlSuffix = data.images[0].split("/").pop();
+  // https://d3u8ez3u55dl9n.cloudfront.net
+  attractionImg.dataset.src = `https://d3u8ez3u55dl9n.cloudfront.net/${urlSuffix}`;
 
   attractionImg.onerror = function () {
     this.onerror = null; // 避免無窮迴圈

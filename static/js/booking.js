@@ -435,11 +435,13 @@ async function userBookings() {
     attractionBookingNumber.textContent = bookings.length;
     section2.classList.remove("hidden");
     bookings.forEach((booking) => {
+      let urlSuffix = booking.data.attraction.image.split("/").pop();
+      // https://d3u8ez3u55dl9n.cloudfront.net
       totalPrice += booking.data.price;
       let html = `
         <div class="booking-attraction-info-wrapper" data-attraction="${booking.data.attraction.id}">
         <div class="booking-image">
-          <img src="https://${booking.data.attraction.image}" alt="attraction-image">
+          <img src="https://d3u8ez3u55dl9n.cloudfront.net/${urlSuffix}" alt="attraction-image">
         </div>
         <div class="booking-attraction-info">
           <div class="attraction-name">台北一日遊：<span>${booking.data.attraction.name}</span></div>
