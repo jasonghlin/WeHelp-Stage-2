@@ -74,7 +74,7 @@ async def get_attractions( keyword: str | None = None, page: int = Query(ge=0)):
 		next_page = page + 1
 
 	response = AttractionResponse(nextPage=next_page, data=attractions)
-	redis_client.set(cache_key, response.json().encode('utf-8'), ex=300)  # 快取 5 分鐘
+	redis_client.set(cache_key, response.json().encode('utf-8'), ex=3600)  # 快取 5 分鐘
 	logging.info(f"Data cached with key: {cache_key}")
 	
 	return response
@@ -110,7 +110,7 @@ async def get_attraction_by_id(attractionId: int):
 				images = json.loads(result["images"])
 		)
 		response_data = AttractionByIdResponse(data=response)
-		redis_client.set(cache_key, response_data.json().encode('utf-8'), ex=300)  # 快取 1 小時
+		redis_client.set(cache_key, response_data.json().encode('utf-8'), ex=3600)  # 快取 1 小時
 		logging.info(f"Data cached with key: {cache_key}")
 
 		return response_data
