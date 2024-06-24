@@ -300,7 +300,6 @@ tappay();
 let user_info;
 async function checkLogin() {
   const loginStatus = await checkLoginStatus(jwtToken);
-  console.log(loginStatus);
   if (!loginStatus) {
     window.location = "/";
   } else {
@@ -507,8 +506,12 @@ async function bookingOrderSuccess(request, token) {
 function checkFormsValidity() {
   const finalConfirmBtn = document.querySelector(".final-confirm-btn");
 
-  finalConfirmBtn.addEventListener("click", (e) => {
+  finalConfirmBtn.addEventListener("click", async (e) => {
     e.preventDefault();
+    const loginStatus = await checkLoginStatus(jwtToken);
+    if (!loginStatus) {
+      window.location = "/";
+    }
 
     const form1 = document.querySelector(".user-info-container");
     const form2 = document.querySelector(".credit-card-container");
