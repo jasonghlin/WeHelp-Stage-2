@@ -420,6 +420,7 @@ function deleteBooking() {
 }
 
 // handle page
+let totalPrice = 0;
 async function userBookings() {
   await fetchUserInfo(jwtToken);
   const bookings = await fetchUserBooking(jwtToken);
@@ -430,7 +431,6 @@ async function userBookings() {
   const attractionBookingNumber = document.querySelector(
     ".attraction-booking-number"
   );
-  let totalPrice = 0;
   username.textContent = user_info.data.name;
   document.querySelector("#name").value = user_info.data.name;
   document.querySelector("#email").value = user_info.data.email;
@@ -526,7 +526,7 @@ function checkFormsValidity() {
           alert("get prime error " + result.msg);
           return;
         }
-        const price = document.querySelector(".price > span").textContent;
+        // const price = document.querySelector(".price > span").textContent;
         const attractionsInfo = document.querySelectorAll(
           ".booking-attraction-info-wrapper"
         );
@@ -569,7 +569,7 @@ function checkFormsValidity() {
         let request = {
           prime: result.card.prime,
           order: {
-            price: price,
+            price: totalPrice,
             trip: trip,
           },
           contact: contact,
