@@ -7,7 +7,11 @@ body {
     /* font-family: 'Alegreya', serif; */
     font-size: 1.6rem;
     font-family: Noto Sans TC, Sans-Serif ;
-
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
 * {
@@ -272,7 +276,7 @@ footer {
     margin-top: auto;
     flex-grow: 1;
     box-sizing: border-box;
-    margin-top: 2rem;
+    margin-top: 4rem;
 }
 
 footer > * {
@@ -402,6 +406,7 @@ footer > * {
     padding: 1rem;
     box-sizing: border-box;
     border: 1px solid #E8E8E8;
+    font-size: 1.6rem;
 }
 
 .user-name, .user-email, .user-phone {
@@ -528,7 +533,7 @@ footer > * {
         max-width: 95vw */
     }
     
-    nav, .booking-info-container-wrapper, .booking-info-container, .user-info-container, .credit-card-container, .final-confirm-container, .hr-1, .hr-2, .hr-3, .hr-4 {
+    nav, .booking-info-container-wrapper, .booking-info-container, .user-info-container, .credit-card-container, .final-confirm-container, .no-booking-message, .hr-1, .hr-2, .hr-3, .hr-4 {
         width: 95vw;
         max-width: 95vw;
         margin-left: auto;
@@ -547,10 +552,6 @@ footer > * {
 
 
 @media (min-width: 360px) and (max-width:600px) {
-    body{
-        margin:0;
-        padding: 0
-    }
 
     nav {
         width: 100vw;
@@ -563,14 +564,14 @@ footer > * {
     }
 
     footer {
-        width: 100vw
+        width: 100vw;
     }
 
     .booking-welcome {
         line-height: 2rem;
     }
 
-    .booking-info-container-wrapper, .booking-info-container {
+    .booking-info-container-wrapper, .booking-info-container, .no-booking-message, .booking-welcome {
         width:95vw;
         max-width: 95vw
     }
@@ -580,7 +581,6 @@ footer > * {
     }
 
     .booking-info-container {
-        display: flex;
         flex-direction: column;
         align-items: center;
     }

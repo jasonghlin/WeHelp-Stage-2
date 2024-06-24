@@ -166,7 +166,7 @@ async function checkLoginStatus(token) {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log("Response status:", response.status); // 新增這一行
+  // console.log("Response status:", response.status); // 新增這一行
 
   if (!response.ok) {
     console.error("Error:", response.statusText);
@@ -298,8 +298,10 @@ tappay();
 // check login status
 
 let user_info;
-function checkLogin() {
-  if (!jwtToken) {
+async function checkLogin() {
+  const loginStatus = await checkLoginStatus(jwtToken);
+  console.log(loginStatus);
+  if (!loginStatus) {
     window.location = "/";
   } else {
     login.removeEventListener("click", loginEvent);
@@ -430,6 +432,8 @@ async function userBookings() {
   );
   let totalPrice = 0;
   username.textContent = user_info.data.name;
+  document.querySelector("#name").value = user_info.data.name;
+  document.querySelector("#email").value = user_info.data.email;
   container.innerHTML = ""; // 清空之前的內容
   if (bookings.length !== 0) {
     attractionBookingNumber.textContent = bookings.length;
@@ -439,17 +443,31 @@ async function userBookings() {
       // https://d3u8ez3u55dl9n.cloudfront.net
       totalPrice += booking.data.price;
       let html = `
-        <div class="booking-attraction-info-wrapper" data-attraction="${booking.data.attraction.id}">
+        <div class="booking-attraction-info-wrapper" data-attraction="${
+          booking.data.attraction.id
+        }">
         <div class="booking-image">
           <img src="https://d3u8ez3u55dl9n.cloudfront.net/${urlSuffix}" alt="attraction-image">
         </div>
         <div class="booking-attraction-info">
-          <div class="attraction-name">台北一日遊：<span>${booking.data.attraction.name}</span></div>
+          <div class="attraction-name">台北一日遊：<span>${
+            booking.data.attraction.name
+          }</span></div>
           <div class="travel-day">日期：<span>${booking.data.date}</span></div>
-          <div class="travel-time">時間：<span>${booking.data.time}</span></div>
-          <div class="travel-fee">費用：<span>新台幣 ${booking.data.price} 元</span></div>
-          <div class="travel-position">地點：<span>${booking.data.attraction.address}</span></div>
-          <img src="/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${booking.data.attraction.id}">
+          <div class="travel-time">時間：<span>${
+            booking.data.time === "morning"
+              ? "早上 9 點到下午 4 點"
+              : "下午 2 點到晚上 9 點"
+          }</span></div>
+          <div class="travel-fee">費用：<span>新台幣 ${
+            booking.data.price
+          } 元</span></div>
+          <div class="travel-position">地點：<span>${
+            booking.data.attraction.address
+          }</span></div>
+          <img src="/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${
+            booking.data.attraction.id
+          }">
         </div>
       </div>
       `;
