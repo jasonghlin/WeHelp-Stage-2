@@ -299,6 +299,7 @@ tappay();
 
 let user_info;
 async function checkLogin() {
+  const jwtToken = localStorage.getItem("session");
   const loginStatus = await checkLoginStatus(jwtToken);
   if (!loginStatus) {
     window.location = "/";
@@ -508,10 +509,7 @@ function checkFormsValidity() {
 
   finalConfirmBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    const loginStatus = await checkLoginStatus(jwtToken);
-    if (!loginStatus) {
-      window.location = "/";
-    }
+    checkLogin();
 
     const form1 = document.querySelector(".user-info-container");
     const form2 = document.querySelector(".credit-card-container");
