@@ -157,6 +157,7 @@ function handleLogin() {
 
 handleLogin();
 
+let user_info;
 // token verify, check login status
 async function checkLoginStatus(token) {
   const response = await fetch("/api/user/auth", {
@@ -174,6 +175,7 @@ async function checkLoginStatus(token) {
     return false;
   }
   user_info = await response.json();
+  console.log(user_info);
   if (user_info) {
     loginEmailInput.value = "";
     loginEmailPassword.value = "";
@@ -297,7 +299,6 @@ tappay();
 
 // check login status
 
-let user_info;
 // async function checkLogin() {
 //   const jwtToken = localStorage.getItem("session");
 //   const loginStatus = await checkLoginStatus(jwtToken);
