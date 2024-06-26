@@ -193,6 +193,9 @@ async function checkLoginStatus(token) {
 async function checkStatus() {
   const jwtToken = localStorage.getItem("session");
   const userInfo = await checkLoginStatus(jwtToken);
+  if (!userInfo) {
+    window.location = "/";
+  }
   return;
 }
 
@@ -488,11 +491,11 @@ async function userBookings() {
 }
 
 async function init() {
- await checkStatus();
- await userBookings();
+  await checkStatus();
+  await userBookings();
 }
 
-init()
+init();
 
 // fetch post orders
 async function bookingOrderSuccess(request, token) {
