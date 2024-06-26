@@ -298,18 +298,18 @@ tappay();
 // check login status
 
 let user_info;
-async function checkLogin() {
-  const jwtToken = localStorage.getItem("session");
-  const loginStatus = await checkLoginStatus(jwtToken);
-  if (!loginStatus) {
-    window.location = "/";
-  } else {
-    login.removeEventListener("click", loginEvent);
-    login.textContent = "登出";
-    login.addEventListener("click", logoutEvent);
-  }
-}
-checkLogin();
+// async function checkLogin() {
+//   const jwtToken = localStorage.getItem("session");
+//   const loginStatus = await checkLoginStatus(jwtToken);
+//   if (!loginStatus) {
+//     window.location = "/";
+//   } else {
+//     login.removeEventListener("click", loginEvent);
+//     login.textContent = "登出";
+//     login.addEventListener("click", logoutEvent);
+//   }
+// }
+// checkLogin();
 
 async function fetchUserBooking(token) {
   let response = await fetch("/api/booking", {
@@ -323,16 +323,16 @@ async function fetchUserBooking(token) {
 }
 
 // get user info
-async function fetchUserInfo(token) {
-  let response = await fetch("/api/user/auth", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  user_info = await response.json();
-  return;
-}
+// async function fetchUserInfo(token) {
+//   let response = await fetch("/api/user/auth", {
+//     method: "GET",
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   });
+//   user_info = await response.json();
+//   return;
+// }
 
 // fetch delete api
 async function fetchDelete(attractionId, token) {
@@ -422,27 +422,28 @@ function deleteBooking() {
 // handle page
 let totalPrice = 0;
 async function userBookings() {
-  await fetchUserInfo(jwtToken);
-  const bookings = await fetchUserBooking(jwtToken);
-  const username = document.querySelector(".user-name");
-  const container = document.querySelector(".booking-info-container");
-  const price = document.querySelector(".price > span");
-  const section2 = document.querySelector(".section2-container");
-  const attractionBookingNumber = document.querySelector(
-    ".attraction-booking-number"
-  );
-  username.textContent = user_info.data.name;
-  document.querySelector("#name").value = user_info.data.name;
-  document.querySelector("#email").value = user_info.data.email;
-  container.innerHTML = ""; // 清空之前的內容
-  if (bookings.length !== 0) {
-    attractionBookingNumber.textContent = bookings.length;
-    section2.classList.remove("hidden");
-    bookings.forEach((booking) => {
-      let urlSuffix = booking.data.attraction.image.split("/").pop();
-      // https://d3u8ez3u55dl9n.cloudfront.net
-      totalPrice += booking.data.price;
-      let html = `
+  // await fetchUserInfo(jwtToken);
+  if (user_info) {
+    const bookings = await fetchUserBooking(jwtToken);
+    const username = document.querySelector(".user-name");
+    const container = document.querySelector(".booking-info-container");
+    const price = document.querySelector(".price > span");
+    const section2 = document.querySelector(".section2-container");
+    const attractionBookingNumber = document.querySelector(
+      ".attraction-booking-number"
+    );
+    username.textContent = user_info.data.name;
+    document.querySelector("#name").value = user_info.data.name;
+    document.querySelector("#email").value = user_info.data.email;
+    container.innerHTML = ""; // 清空之前的內容
+    if (bookings.length !== 0) {
+      attractionBookingNumber.textContent = bookings.length;
+      section2.classList.remove("hidden");
+      bookings.forEach((booking) => {
+        let urlSuffix = booking.data.attraction.image.split("/").pop();
+        // https://d3u8ez3u55dl9n.cloudfront.net
+        totalPrice += booking.data.price;
+        let html = `
         <div class="booking-attraction-info-wrapper" data-attraction="${
           booking.data.attraction.id
         }">
@@ -471,16 +472,17 @@ async function userBookings() {
         </div>
       </div>
       `;
-      container.insertAdjacentHTML("beforeend", html);
-    });
-    price.textContent = `${totalPrice}`;
-    deleteBooking(); // 重新綁定刪除按鈕的事件處理器
-  } else {
-    const noBookingMessage = document.querySelector(".no-booking-message");
-    noBookingMessage.classList.remove("hidden");
-    container.classList.add("hidden");
-    section2.classList.add("hidden");
-    footer.style.alignItems = "start";
+        container.insertAdjacentHTML("beforeend", html);
+      });
+      price.textContent = `${totalPrice}`;
+      deleteBooking(); // 重新綁定刪除按鈕的事件處理器
+    } else {
+      const noBookingMessage = document.querySelector(".no-booking-message");
+      noBookingMessage.classList.remove("hidden");
+      container.classList.add("hidden");
+      section2.classList.add("hidden");
+      footer.style.alignItems = "start";
+    }
   }
 }
 userBookings();
