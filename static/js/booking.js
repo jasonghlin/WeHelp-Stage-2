@@ -173,8 +173,8 @@ async function checkLoginStatus(token) {
     // modalControl("block");
     return false;
   }
-  const data = await response.json();
-  if (data) {
+  user_info = await response.json();
+  if (user_info) {
     loginEmailInput.value = "";
     loginEmailPassword.value = "";
     modalControl("hidden");
