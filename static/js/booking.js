@@ -175,7 +175,7 @@ async function checkLoginStatus(token) {
     return false;
   }
   user_info = await response.json();
-  console.log(user_info);
+  // console.log(user_info);
   if (user_info) {
     loginEmailInput.value = "";
     loginEmailPassword.value = "";
@@ -183,7 +183,7 @@ async function checkLoginStatus(token) {
     login.removeEventListener("click", loginEvent);
     login.textContent = "登出系統";
     login.addEventListener("click", logoutEvent);
-    return data;
+    return user_info;
   } else {
     modalControl("block");
     return false;
