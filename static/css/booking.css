@@ -310,7 +310,7 @@ footer > * {
 
 .booking-info-container {
     width: 98rem;
-    height: 44rem;
+    /* height: 44rem; */
     margin: auto;
     overflow-y: auto;
 }
@@ -583,6 +583,7 @@ footer > * {
     .booking-info-container {
         flex-direction: column;
         align-items: center;
+        height: 44rem;
     }
 
     .booking-attraction-info-wrapper {
