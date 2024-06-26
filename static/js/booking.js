@@ -196,7 +196,7 @@ async function checkStatus() {
   return;
 }
 
-checkStatus();
+// checkStatus();
 
 // handle booking plan
 function handleBookingPlan() {
@@ -486,7 +486,13 @@ async function userBookings() {
     }
   }
 }
-userBookings();
+
+async function init() {
+ await checkStatus();
+ await userBookings();
+}
+
+init()
 
 // fetch post orders
 async function bookingOrderSuccess(request, token) {
