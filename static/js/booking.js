@@ -521,7 +521,7 @@ function checkFormsValidity() {
 
   finalConfirmBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    checkLogin();
+    checkStatus();
 
     const form1 = document.querySelector(".user-info-container");
     const form2 = document.querySelector(".credit-card-container");
@@ -590,7 +590,7 @@ function checkFormsValidity() {
         const data = await bookingOrderSuccess(request, jwtToken);
         console.log(data);
         if (data.data) {
-          alert("訂單建立成功！");
+          // alert("訂單建立成功！");
           window.location.href = "/thankyou?number=" + data.data.number;
         } else {
           alert("訂單建立失敗: " + data.message);
