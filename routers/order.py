@@ -133,7 +133,8 @@ async def get_order_info(orderNumber: str, token: str = Depends(oauth2_scheme)):
     payload = verify_token(token)
     if payload:
         trips = []
-        results = get_db_order_info(payload.get("email"), orderNumber)
+        print(type(orderNumber))
+        results = get_db_order_info(payload.get("id"), orderNumber)
         # print(results)
         if results:
             number = results[0].get("number")

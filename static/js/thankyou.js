@@ -221,9 +221,9 @@ async function getOrder(orderNumber, token) {
 async function init() {
   const orderStatus = document.querySelector(".order-status");
   const orderNumberDiv = document.querySelector(".order-number");
-  const orderNumber = window.location.href.split("?")[1];
+  const orderNumber = window.location.href.split("?")[1].split("=")[1];
   let data = await getOrder(orderNumber, jwtToken);
-  console.log(data);
+  //   console.log(data);
   if (data.data.status === 0) {
     orderStatus.textContent = "行程預定成功";
     orderNumberDiv.textContent = orderNumber;
