@@ -35,6 +35,7 @@
           <h3>登入會員帳號</h3>
           <input id="login-email" class="form-input" type="email" placeholder="輸入電子信箱" required>
           <input id="login-password" class="form-input" type="password" placeholder="輸入密碼" required>
+          <div class="login-error-message"></div>
           <button>登入帳戶</button>
           <div class="to-register-wrapper">
             <div>還沒有帳戶？</div>
@@ -45,16 +46,18 @@
       <!-- 註冊表單 -->
       <div class="register-container hidden">
         <div class="gradient-bar"></div>
-        <form action="/api/user" class="register-form" method="POST">
+        <form action="" class="register-form">
           <div class="register-form-exit form-exit">
             <img src="/static/images/form-delete.png" alt="from-exit">
           </div>
           <h3>註冊會員帳號</h3>
-          <input id="register-name" class="form-input" type="text" placeholder="姓名" name="register-name" required>
-          <input id="register-email" class="form-input" type="email" placeholder="電子郵件" name="register-email" required>
-          <input id="register-password" class="form-input" type="password" placeholder="密碼" name="register-password"
+          <input id="register-name" class="form-input" type="text" placeholder="輸入姓名" name="register-name" required>
+          <input id="register-email" class="form-input" type="email" placeholder="輸入電子郵件" name="register-email"
             required>
-          <button>註冊新帳戶</button>
+          <input id="register-password" class="form-input" type="password" placeholder="輸入密碼" name="register-password"
+            required>
+          <div class="register-error-message"></div>
+          <button class="register-btn" type="submit">註冊新帳戶</button>
           <div class="to-login-wrapper">
             <div>已經有帳戶了？</div>
             <div class="to-login-link">點此登入</div>
@@ -63,6 +66,7 @@
       </div>
     </div>
   </div>
+
   <hr class="hr-1">
 
   <section class="section1">

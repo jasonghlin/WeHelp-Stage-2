@@ -1,7 +1,7 @@
 from fastapi import *
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from database import create_db_order_contact, fetch_db_user_booking, get_db_order_info
+from pydantic import BaseModel, EmailStr
+from database import create_db_order_contact, fetch_db_user_booking, get_db_order_info, update_db_order_contact
 from starlette import status
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
@@ -25,7 +25,7 @@ router = APIRouter(
 
 class Contact(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     phone: str
 
 class Attraction(BaseModel):
@@ -53,14 +53,14 @@ class Payment(BaseModel):
     message: str
 
 class OrderResponseDetail(BaseModel):
-    number: int 
+    number: str 
     payment: Payment
 
 class OrderResponse(BaseModel):
     data: OrderResponseDetail
 
 class OrderNumberResponseDetail(BaseModel):
-    number: int
+    number: str
     price: int
     trip: List[Trip]
     contact: Contact
@@ -69,8 +69,11 @@ class OrderNumberResponseDetail(BaseModel):
 class OrderNumberResponse(BaseModel):
     data: OrderNumberResponseDetail
 
-def create_order_number():
-    return random.randint(0, 100000000)
+def create_order_number(order_id):
+    now = datetime.now()
+    formatted_now = now.strftime("%Y%m%d%H%M%S")
+    order_number = f"{formatted_now}{random.randint(0, 999999)}-{order_id}"
+    return order_number
     
     
 # 補 autherization
@@ -78,7 +81,12 @@ def create_order_number():
 async def create_order(order_request: Order, token: str = Depends(oauth2_scheme)):
     payload = verify_token(token)
     if payload:
-        order_number = create_order_number()
+        user_id = payload.get("id")
+        booking_info = fetch_db_user_booking(user_id)
+        booking_id = [info.get("id") for info in booking_info]
+
+        order_id = create_db_order_contact(order_number = None, price = order_request.order.price, booking_id = booking_id, user_id = user_id, contact = order_request.contact, status=None, paid = 0)
+        order_number = create_order_number(order_id)
         URL = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
         headers = {
         "Content-Type": "application/json",
@@ -89,29 +97,27 @@ async def create_order(order_request: Order, token: str = Depends(oauth2_scheme)
                 "merchant_id": os.getenv("TAPPAY_MERCHANT_ID"),
                 "details":"TapPay Test",
                 "amount": order_request.order.price,
+                "order_number": order_number,
                 "cardholder": {
                     "phone_number": order_request.contact.phone,
                     "name": order_request.contact.name,
                     "email": order_request.contact.email
-                    # "order_number": order_number
                     }
                 }
         try:
             tappay_response = requests.post(URL, json=data, headers=headers)
             result = tappay_response.json()
-            user_id = payload.get("id")
-            booking_info = fetch_db_user_booking(user_id)
-            booking_id = [info.get("id") for info in booking_info]
+            print(result)
             if result.get("status") == 0:
-                db_result = create_db_order_contact(order_number, result.get("status"), order_request.order.price, booking_id, user_id, order_request.contact)
+                db_result = update_db_order_contact(order_id, order_number, result.get("status"), paid = 1)
 
                 if db_result:
                     return (OrderResponse(data = OrderResponseDetail(number = order_number, payment = Payment(status = result.get("status"), message = "付款成功"))))
                 else: return ErrorResponse(error = True, message = f"訂單建立失敗，輸入不正確或其他原因")
             else:
-                db_result = create_db_order_contact(order_number, result.get("status"), order_request.order.price, booking_id, user_id, order_request.contact)
+                db_result = update_db_order_contact(order_id, order_number, result.get("status"), paid = 0)
                 if db_result:
-                    return (OrderResponse(data = OrderResponseDetail(number = order_number, payment = Payment(status = result.get("status"), message = "尚未付款"))))
+                    return (OrderResponse(data = OrderResponseDetail(number = order_number, payment = Payment(status = result.get("status"), message = result.get("msg")))))
                 else: return ErrorResponse(error = True, message = f"訂單建立失敗，輸入不正確或其他原因")
         except Exception as e: 
             print(e)
@@ -122,13 +128,14 @@ async def create_order(order_request: Order, token: str = Depends(oauth2_scheme)
         )
     
 
-@router.get("/api/order/{orderNumber}")
-async def get_order_info(orderNumber: int):
-    # payload = verify_token(token)
-    # if payload:
+@router.get("/api/order/{orderNumber}", status_code=status.HTTP_200_OK, summary="根據訂單編號取得訂單資訊")
+async def get_order_info(orderNumber: str, token: str = Depends(oauth2_scheme)):
+    payload = verify_token(token)
+    if payload:
         trips = []
-        results = get_db_order_info(1, orderNumber)
-        print(results)
+        print(type(orderNumber))
+        results = get_db_order_info(payload.get("id"), orderNumber)
+        # print(results)
         if results:
             number = results[0].get("number")
             price = results[0].get("price")
@@ -142,7 +149,11 @@ async def get_order_info(orderNumber: int):
             return OrderNumberResponse(data = response)
         else: 
             return ErrorResponse(error = True, message = f"找不到訂單，輸入不正確或其他原因")
-        
+    else:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"error": True, "message": "未登入系統，拒絕存取"}
+        )
 
 
              

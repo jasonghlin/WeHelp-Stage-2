@@ -8,6 +8,7 @@ __pycache__/
 .DS_Store
 docs/
 *.rdb
+*.DS_Store
 # Distribution / packaging
 .Python
 build/

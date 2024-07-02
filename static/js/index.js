@@ -158,7 +158,7 @@ function handleLogin() {
 
 handleLogin();
 
-// token verify, check login status
+// token verify, check login status, logout event
 async function checkLoginStatus(token) {
   const response = await fetch("/api/user/auth", {
     method: "GET",

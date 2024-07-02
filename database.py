@@ -206,6 +206,7 @@ def create_bookings_table():
                 date DATE,
                 time CHAR(10),
                 price INT,
+                booking_time DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
                 Foreign Key(attraction_id) References attractions(id),
                 Foreign Key(user_id) References users(id)
             )
@@ -229,10 +230,12 @@ def create_orders_table():
         create_table_query = """
             CREATE TABLE IF NOT EXISTS orders(
                 id INT PRIMARY KEY AUTO_INCREMENT,
-                number INT,
+                number VARCHAR(255) UNIQUE,
                 status INT,
                 price INT,
                 user_id INT,
+                paid TINYINT,
+                time DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
                 Foreign Key(user_id) References users(id)
             )
 """
@@ -384,18 +387,18 @@ create_orders_bookings_relation_table()
 
 
 # create new order
-def create_db_order_contact(order_number, status, price, booking_id, user_id, contact):
+def create_db_order_contact(order_number, status, price, booking_id, user_id, paid, contact):
     try:
         db_connection = get_db_connection()
         db = db_connection.cursor(dictionary = True)
-        order_query = ("INSERT INTO orders(number, status, price, user_id) VALUES(%s, %s, %s, %s)")
-        val = (order_number, status, price, user_id)
+        order_query = ("INSERT INTO orders(number, status, price, user_id, paid) VALUES(%s, %s, %s, %s, %s)")
+        val = (order_number, status, price, user_id, paid)
         db.execute(order_query, val)
         db_connection.commit()
         order_id = db.lastrowid
         # print(booking_id)
         for id in booking_id:
-            print(id)
+            # print(id)
             orders_bookings_relation_query = ("INSERT INTO orders_bookings_relation(order_id, booking_id) VALUES(%s, %s)")
             orders_bookings_relation_val = (order_id, id)
             db.execute(orders_bookings_relation_query, orders_bookings_relation_val)
@@ -404,6 +407,23 @@ def create_db_order_contact(order_number, status, price, booking_id, user_id, co
         contact_val = (order_id, contact.name, contact.email, contact.phone)
         db.execute(contact_query, contact_val)
         
+        db_connection.commit()
+        return order_id
+    except Exception as e:
+        logging.error("Error when create order: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+# update order
+def update_db_order_contact(order_id, order_number, status, paid):
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        order_query = ("UPDATE orders SET number = %s, status = %s, paid = %s WHERE id = %s")
+        val = (order_number, status, paid, order_id)
+        db.execute(order_query, val)
         db_connection.commit()
         return True
     except Exception as e:
@@ -414,23 +434,21 @@ def create_db_order_contact(order_number, status, price, booking_id, user_id, co
         db_connection.close()
 
 
-
-
-def get_db_order_info(user_id, order_id):
+def get_db_order_info(user_id, order_number):
     try: 
         db_connection = get_db_connection()
         db = db_connection.cursor(dictionary = True)
         booking_query = ("""
-            SELECT orders.user_id, orders.number, orders.price, orders.status, bookings.date, bookings.time, contact.name, contact.email, contact.phone, attractions.id AS attraction_id, attractions.name AS attraction_name, attractions.address, attractions.images
+            SELECT orders.user_id, orders.number, orders.price, orders.status, orders.paid, bookings.date, bookings.time, contact.name, contact.email, contact.phone, attractions.id AS attraction_id, attractions.name AS attraction_name, attractions.address, attractions.images
             FROM orders
             LEFT JOIN contact on orders.id = contact.order_id
             LEFT JOIN orders_bookings_relation ON orders.id = orders_bookings_relation.order_id
             LEFT JOIN bookings ON orders_bookings_relation.booking_id = bookings.id
             LEFT JOIN attractions ON bookings.attraction_id = attractions.id
-            WHERE orders.user_id = %s AND orders.id = %s
+            WHERE orders.user_id = %s AND orders.number = %s
 """)
         # print(user.email)
-        val = (user_id, order_id)
+        val = (user_id, order_number)
         db.execute(booking_query, val)
         result = db.fetchall()
         # print(result)

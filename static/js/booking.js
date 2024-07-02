@@ -157,6 +157,7 @@ function handleLogin() {
 
 handleLogin();
 
+let user_info;
 // token verify, check login status
 async function checkLoginStatus(token) {
   const response = await fetch("/api/user/auth", {
@@ -166,22 +167,23 @@ async function checkLoginStatus(token) {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log("Response status:", response.status); // 新增這一行
+  // console.log("Response status:", response.status); // 新增這一行
 
   if (!response.ok) {
     console.error("Error:", response.statusText);
     // modalControl("block");
     return false;
   }
-  const data = await response.json();
-  if (data) {
+  user_info = await response.json();
+  // console.log(user_info);
+  if (user_info) {
     loginEmailInput.value = "";
     loginEmailPassword.value = "";
     modalControl("hidden");
     login.removeEventListener("click", loginEvent);
     login.textContent = "登出系統";
     login.addEventListener("click", logoutEvent);
-    return data;
+    return user_info;
   } else {
     modalControl("block");
     return false;
@@ -191,10 +193,13 @@ async function checkLoginStatus(token) {
 async function checkStatus() {
   const jwtToken = localStorage.getItem("session");
   const userInfo = await checkLoginStatus(jwtToken);
+  if (!userInfo) {
+    window.location = "/";
+  }
   return;
 }
 
-checkStatus();
+// checkStatus();
 
 // handle booking plan
 function handleBookingPlan() {
@@ -254,15 +259,15 @@ async function tappay() {
       },
       // Styling ccv field
       "input.ccv": {
-        // 'font-size': '16px'
+        "font-size": "16px",
       },
       // Styling expiration-date field
       "input.expiration-date": {
-        // 'font-size': '16px'
+        "font-size": "16px",
       },
       // Styling card-number field
       "input.card-number": {
-        // 'font-size': '16px'
+        "font-size": "16px",
       },
       // style focus state
       ":focus": {
@@ -297,17 +302,18 @@ tappay();
 
 // check login status
 
-let user_info;
-function checkLogin() {
-  if (!jwtToken) {
-    window.location = "/";
-  } else {
-    login.removeEventListener("click", loginEvent);
-    login.textContent = "登出";
-    login.addEventListener("click", logoutEvent);
-  }
-}
-checkLogin();
+// async function checkLogin() {
+//   const jwtToken = localStorage.getItem("session");
+//   const loginStatus = await checkLoginStatus(jwtToken);
+//   if (!loginStatus) {
+//     window.location = "/";
+//   } else {
+//     login.removeEventListener("click", loginEvent);
+//     login.textContent = "登出";
+//     login.addEventListener("click", logoutEvent);
+//   }
+// }
+// checkLogin();
 
 async function fetchUserBooking(token) {
   let response = await fetch("/api/booking", {
@@ -321,16 +327,16 @@ async function fetchUserBooking(token) {
 }
 
 // get user info
-async function fetchUserInfo(token) {
-  let response = await fetch("/api/user/auth", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  user_info = await response.json();
-  return;
-}
+// async function fetchUserInfo(token) {
+//   let response = await fetch("/api/user/auth", {
+//     method: "GET",
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   });
+//   user_info = await response.json();
+//   return;
+// }
 
 // fetch delete api
 async function fetchDelete(attractionId, token) {
@@ -418,54 +424,78 @@ function deleteBooking() {
 }
 
 // handle page
+let totalPrice = 0;
 async function userBookings() {
-  await fetchUserInfo(jwtToken);
-  const bookings = await fetchUserBooking(jwtToken);
-  const username = document.querySelector(".user-name");
-  const container = document.querySelector(".booking-info-container");
-  const price = document.querySelector(".price > span");
-  const section2 = document.querySelector(".section2-container");
-  const attractionBookingNumber = document.querySelector(
-    ".attraction-booking-number"
-  );
-  let totalPrice = 0;
-  username.textContent = user_info.data.name;
-  container.innerHTML = ""; // 清空之前的內容
-  if (bookings.length !== 0) {
-    attractionBookingNumber.textContent = bookings.length;
-    section2.classList.remove("hidden");
-    bookings.forEach((booking) => {
-      let urlSuffix = booking.data.attraction.image.split("/").pop();
-      // https://d3u8ez3u55dl9n.cloudfront.net
-      totalPrice += booking.data.price;
-      let html = `
-        <div class="booking-attraction-info-wrapper" data-attraction="${booking.data.attraction.id}">
+  // await fetchUserInfo(jwtToken);
+  if (user_info) {
+    const bookings = await fetchUserBooking(jwtToken);
+    const username = document.querySelector(".user-name");
+    const container = document.querySelector(".booking-info-container");
+    const price = document.querySelector(".price > span");
+    const section2 = document.querySelector(".section2-container");
+    const attractionBookingNumber = document.querySelector(
+      ".attraction-booking-number"
+    );
+    username.textContent = user_info.data.name;
+    document.querySelector("#name").value = user_info.data.name;
+    document.querySelector("#email").value = user_info.data.email;
+    container.innerHTML = ""; // 清空之前的內容
+    if (bookings.length !== 0) {
+      attractionBookingNumber.textContent = bookings.length;
+      section2.classList.remove("hidden");
+      bookings.forEach((booking) => {
+        let urlSuffix = booking.data.attraction.image.split("/").pop();
+        // https://d3u8ez3u55dl9n.cloudfront.net
+        totalPrice += booking.data.price;
+        let html = `
+        <div class="booking-attraction-info-wrapper" data-attraction="${
+          booking.data.attraction.id
+        }">
         <div class="booking-image">
           <img src="https://d3u8ez3u55dl9n.cloudfront.net/${urlSuffix}" alt="attraction-image">
         </div>
         <div class="booking-attraction-info">
-          <div class="attraction-name">台北一日遊：<span>${booking.data.attraction.name}</span></div>
+          <div class="attraction-name">台北一日遊：<span>${
+            booking.data.attraction.name
+          }</span></div>
           <div class="travel-day">日期：<span>${booking.data.date}</span></div>
-          <div class="travel-time">時間：<span>${booking.data.time}</span></div>
-          <div class="travel-fee">費用：<span>新台幣 ${booking.data.price} 元</span></div>
-          <div class="travel-position">地點：<span>${booking.data.attraction.address}</span></div>
-          <img src="/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${booking.data.attraction.id}">
+          <div class="travel-time">時間：<span>${
+            booking.data.time === "morning"
+              ? "早上 9 點到下午 4 點"
+              : "下午 2 點到晚上 9 點"
+          }</span></div>
+          <div class="travel-fee">費用：<span>新台幣 ${
+            booking.data.price
+          } 元</span></div>
+          <div class="travel-position">地點：<span>${
+            booking.data.attraction.address
+          }</span></div>
+          <img src="/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${
+            booking.data.attraction.id
+          }">
         </div>
       </div>
       `;
-      container.insertAdjacentHTML("beforeend", html);
-    });
-    price.textContent = `${totalPrice}`;
-    deleteBooking(); // 重新綁定刪除按鈕的事件處理器
-  } else {
-    const noBookingMessage = document.querySelector(".no-booking-message");
-    noBookingMessage.classList.remove("hidden");
-    container.classList.add("hidden");
-    section2.classList.add("hidden");
-    footer.style.alignItems = "start";
+        container.insertAdjacentHTML("beforeend", html);
+      });
+      price.textContent = `${totalPrice}`;
+      deleteBooking(); // 重新綁定刪除按鈕的事件處理器
+    } else {
+      const noBookingMessage = document.querySelector(".no-booking-message");
+      noBookingMessage.classList.remove("hidden");
+      container.classList.add("hidden");
+      section2.classList.add("hidden");
+      footer.style.alignItems = "start";
+    }
   }
 }
-userBookings();
+
+async function init() {
+  await checkStatus();
+  await userBookings();
+}
+
+init();
 
 // fetch post orders
 async function bookingOrderSuccess(request, token) {
@@ -489,8 +519,9 @@ async function bookingOrderSuccess(request, token) {
 function checkFormsValidity() {
   const finalConfirmBtn = document.querySelector(".final-confirm-btn");
 
-  finalConfirmBtn.addEventListener("click", (e) => {
+  finalConfirmBtn.addEventListener("click", async (e) => {
     e.preventDefault();
+    checkStatus();
 
     const form1 = document.querySelector(".user-info-container");
     const form2 = document.querySelector(".credit-card-container");
@@ -507,7 +538,7 @@ function checkFormsValidity() {
           alert("get prime error " + result.msg);
           return;
         }
-        const price = document.querySelector(".price > span").textContent;
+        // const price = document.querySelector(".price > span").textContent;
         const attractionsInfo = document.querySelectorAll(
           ".booking-attraction-info-wrapper"
         );
@@ -550,7 +581,7 @@ function checkFormsValidity() {
         let request = {
           prime: result.card.prime,
           order: {
-            price: price,
+            price: totalPrice,
             trip: trip,
           },
           contact: contact,
@@ -559,7 +590,7 @@ function checkFormsValidity() {
         const data = await bookingOrderSuccess(request, jwtToken);
         console.log(data);
         if (data.data) {
-          alert("訂單建立成功！");
+          // alert("訂單建立成功！");
           window.location.href = "/thankyou?number=" + data.data.number;
         } else {
           alert("訂單建立失敗: " + data.message);

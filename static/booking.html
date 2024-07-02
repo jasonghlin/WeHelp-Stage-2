@@ -24,6 +24,7 @@
   </header>
   <hr class="hr-1">
   <main>
+
     <div class="overlay hidden"></div>
     <div class="modal-container hidden">
       <div class="modal-content">
@@ -37,6 +38,7 @@
             <h3>登入會員帳號</h3>
             <input id="login-email" class="form-input" type="email" placeholder="輸入電子信箱" required>
             <input id="login-password" class="form-input" type="password" placeholder="輸入密碼" required>
+            <div class="login-error-message"></div>
             <button>登入帳戶</button>
             <div class="to-register-wrapper">
               <div>還沒有帳戶？</div>
@@ -57,6 +59,7 @@
               required>
             <input id="register-password" class="form-input" type="password" placeholder="輸入密碼" name="register-password"
               required>
+            <div class="register-error-message"></div>
             <button class="register-btn" type="submit">註冊新帳戶</button>
             <div class="to-login-wrapper">
               <div>已經有帳戶了？</div>
@@ -103,7 +106,7 @@
         </div>
         <div class="user-phone">
           <label for="phone">手機號碼：</label>
-          <input type="tel" id="phone" required>
+          <input type="tel" id="phone" minlength="10" required>
         </div>
         <div class="reminder">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</div>
       </form>
