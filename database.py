@@ -434,7 +434,7 @@ def update_db_order_contact(order_id, order_number, status, paid):
         db_connection.close()
 
 
-def get_db_order_info(user_id, order_number):
+def get_db_order_info(user_email, order_number):
     try: 
         db_connection = get_db_connection()
         db = db_connection.cursor(dictionary = True)
@@ -445,10 +445,10 @@ def get_db_order_info(user_id, order_number):
             LEFT JOIN orders_bookings_relation ON orders.id = orders_bookings_relation.order_id
             LEFT JOIN bookings ON orders_bookings_relation.booking_id = bookings.id
             LEFT JOIN attractions ON bookings.attraction_id = attractions.id
-            WHERE orders.user_id = %s AND orders.number = %s
+            WHERE orders.enauk = %s AND orders.number = %s
 """)
         # print(user.email)
-        val = (user_id, order_number)
+        val = (user_email, order_number)
         db.execute(booking_query, val)
         result = db.fetchall()
         # print(result)
