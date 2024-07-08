@@ -160,32 +160,37 @@ handleLogin();
 let user_info;
 // token verify, check login status
 async function checkLoginStatus(token) {
-  const response = await fetch("/api/user/auth", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  // console.log("Response status:", response.status); // 新增這一行
+  try {
+    const response = await fetch("/api/user/auth", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // console.log("Response status:", response.status); // 新增這一行
 
-  if (!response.ok) {
-    console.error("Error:", response.statusText);
-    // modalControl("block");
-    return false;
-  }
-  user_info = await response.json();
-  // console.log(user_info);
-  if (user_info) {
-    loginEmailInput.value = "";
-    loginEmailPassword.value = "";
-    modalControl("hidden");
-    login.removeEventListener("click", loginEvent);
-    login.textContent = "登出系統";
-    login.addEventListener("click", logoutEvent);
-    return user_info;
-  } else {
-    modalControl("block");
+    if (!response.ok) {
+      console.error("Error:", response.statusText);
+      // modalControl("block");
+      return false;
+    }
+    user_info = await response.json();
+    // console.log(user_info);
+    if (user_info) {
+      loginEmailInput.value = "";
+      loginEmailPassword.value = "";
+      modalControl("hidden");
+      login.removeEventListener("click", loginEvent);
+      login.textContent = "登出系統";
+      login.addEventListener("click", logoutEvent);
+      return user_info;
+    } else {
+      modalControl("block");
+      return false;
+    }
+  } catch (error) {
+    console.error("Login status check failed:", error);
     return false;
   }
 }
@@ -350,55 +355,70 @@ async function fetchDelete(attractionId, token) {
   return data;
 }
 
-function updateBookingInfo() {
-  fetchUserBooking(jwtToken)
-    .then((bookings) => {
-      const container = document.querySelector(".booking-info-container");
-      const price = document.querySelector(".price > span");
-      const section2 = document.querySelector(".section2-container");
-      const attractionBookingNumber = document.querySelector(
-        ".attraction-booking-number"
-      );
-      let totalPrice = 0;
+async function updateBookingInfo() {
+  try {
+    const bookings = await fetchUserBooking(jwtToken);
+    const container = document.querySelector(".booking-info-container");
+    const price = document.querySelector(".price > span");
+    const section2 = document.querySelector(".section2-container");
+    const attractionBookingNumber = document.querySelector(
+      ".attraction-booking-number"
+    );
+    let totalPrice = 0;
 
-      container.innerHTML = ""; // 清空之前的內容
+    container.innerHTML = "";
 
-      if (bookings.length !== 0) {
-        attractionBookingNumber.textContent = bookings.length;
-        section2.classList.remove("hidden");
-        bookings.forEach((booking) => {
-          totalPrice += booking.data.price;
-          let html = `
-          <div class="booking-attraction-info-wrapper" data-attraction="${booking.data.attraction.id}">
-          <div class="booking-image">
-            <img src="https://${booking.data.attraction.image}" alt="attraction-image">
-          </div>
-          <div class="booking-attraction-info">
-            <div class="attraction-name">台北一日遊：<span>${booking.data.attraction.name}</span></div>
-            <div class="travel-day">日期：<span>${booking.data.date}</span></div>
-            <div class="travel-time">時間：<span>${booking.data.time}</span></div>
-            <div class="travel-fee">費用：<span>${booking.data.price}</span></div>
-            <div class="travel-position">地點：<span>${booking.data.attraction.address}</span></div>
-            <img src="/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${booking.data.attraction.id}">
-          </div>
+    if (bookings.length !== 0) {
+      attractionBookingNumber.textContent = bookings.length;
+      section2.classList.remove("hidden");
+      bookings.forEach((booking) => {
+        totalPrice += booking.data.price;
+        let html = `
+        <div class="booking-attraction-info-wrapper" data-attraction="${
+          booking.data.attraction.id
+        }">
+        <div class="booking-image">
+          <img src="https://${
+            booking.data.attraction.image
+          }" alt="attraction-image">
         </div>
-        `;
-          container.insertAdjacentHTML("beforeend", html);
-        });
-        price.textContent = `${totalPrice}`;
-        deleteBooking(); // 重新綁定刪除按鈕的事件處理器
-      } else {
-        attractionBookingNumber.textContent = 0;
-        const noBookingMessage = document.querySelector(".no-booking-message");
-        noBookingMessage.classList.remove("hidden");
-        container.classList.add("hidden");
-        section2.classList.add("hidden");
-        footer.style.alignItems = "start";
-      }
-    })
-    .catch((error) => {
-      console.error("Error updating booking info:", error);
-    });
+        <div class="booking-attraction-info">
+          <div class="attraction-name">台北一日遊：<span>${
+            booking.data.attraction.name
+          }</span></div>
+          <div class="travel-day">日期：<span>${booking.data.date}</span></div>
+          <div class="travel-time">時間：<span>${
+            booking.data.time === "morning"
+              ? "早上 9 點到下午 4 點"
+              : "下午 2 點到晚上 9 點"
+          }</span></div>
+          <div class="travel-fee">費用：<span>新台幣 ${
+            booking.data.price
+          } 元</span></div>
+          <div class="travel-position">地點：<span>${
+            booking.data.attraction.address
+          }</span></div>
+          <img src="/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${
+            booking.data.attraction.id
+          }">
+        </div>
+      </div>
+      `;
+        container.insertAdjacentHTML("beforeend", html);
+      });
+      price.textContent = `${totalPrice}`;
+      deleteBooking();
+    } else {
+      attractionBookingNumber.textContent = 0;
+      const noBookingMessage = document.querySelector(".no-booking-message");
+      noBookingMessage.classList.remove("hidden");
+      container.classList.add("hidden");
+      section2.classList.add("hidden");
+      footer.style.alignItems = "start";
+    }
+  } catch (error) {
+    console.error("Error updating booking info:", error);
+  }
 }
 
 // add delete event on booking
@@ -490,6 +510,44 @@ async function userBookings() {
   }
 }
 
+let socket;
+
+function connectWebSocket() {
+  if (socket && socket.readyState !== WebSocket.CLOSED) {
+    console.log("WebSocket is already open or connecting");
+    return;
+  }
+
+  socket = new WebSocket(`ws://${window.location.host}/ws/booking/1`);
+
+  socket.onopen = function (event) {
+    console.log("WebSocket connection opened:", event);
+    socket.send(JSON.stringify({ type: "get_booking" }));
+  };
+
+  socket.onmessage = async function (event) {
+    try {
+      const message = JSON.parse(event.data);
+      console.log(message);
+      if (message.action === "refresh_booking") {
+        console.log("Updating booking info...");
+        await updateBookingInfo();
+      }
+    } catch (error) {
+      console.error("Error handling WebSocket message:", error);
+    }
+  };
+
+  socket.onerror = function (event) {
+    console.error("WebSocket error observed:", event);
+  };
+
+  socket.onclose = function (event) {
+    console.warn("WebSocket connection closed:", event);
+    setTimeout(connectWebSocket, 1000);
+  };
+}
+connectWebSocket();
 async function init() {
   await checkStatus();
   await userBookings();
