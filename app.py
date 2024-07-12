@@ -4,7 +4,10 @@ from fastapi.staticfiles import StaticFiles
 from typing import List
 from routers import attraction_api, mrts, user, booking_attraction, order, member_page
 from fastapi.middleware.cors import CORSMiddleware
+import os
+from dotenv import load_dotenv
 
+load_dotenv(dotenv_path='./.env')
 origins = [
     "http://localhost",
     "http://localhost:8000",
@@ -14,7 +17,13 @@ origins = [
 
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+ENV = os.environ.get("ENVIRONMENT", "development")
+if ENV == "production":
+    static_path = "https://d3u8ez3u55dl9n.cloudfront.net/static"
+else:
+    static_path = "static"
+	
+app.mount("/static", StaticFiles(directory=static_path), name="static")
 
 
 app.add_middleware(

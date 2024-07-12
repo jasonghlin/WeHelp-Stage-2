@@ -10,8 +10,25 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-pool = redis.ConnectionPool(host='taipei-day-trip-redis-z2mtgi.serverless.usw2.cache.amazonaws.com', port=6379, db=0)
+redis_host = "clustercfg.taipei-day-trip-redis-server.z2mtgi.usw2.cache.amazonaws.com"
+redis_port = 6379  # 默認端口,根據你的配置可能會不同
+
+# 創建連接池
+pool = redis.ConnectionPool(
+    host=redis_host,
+    port=redis_port,
+    decode_responses=True  # 自動將 bytes 解碼為 str
+)
+
+# 創建 Redis 客戶端
 r = redis.Redis(connection_pool=pool)
+
+# 測試連接
+try:
+    r.ping()
+    print("成功連接到 ElastiCache!")
+except redis.ConnectionError as e:
+    print(f"連接失敗: {e}")
 
 
 router = APIRouter(
