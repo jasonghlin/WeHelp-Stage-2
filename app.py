@@ -2,7 +2,7 @@ from fastapi import *
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from typing import List
-from routers import attraction_api, mrts, user, booking_attraction, order
+from routers import attraction_api, mrts, user, booking_attraction, order, member_page
 from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
@@ -37,6 +37,9 @@ async def booking(request: Request):
 @app.get("/thankyou", include_in_schema=False)
 async def thankyou(request: Request):
 	return FileResponse("./static/thankyou.html", media_type="text/html")
+@app.get("/memberpage", include_in_schema=False)
+async def thankyou(request: Request):
+	return FileResponse("./static/member page.html", media_type="text/html")
 # -----------------------------------------------
 
 
@@ -45,3 +48,4 @@ app.include_router(mrts.router)
 app.include_router(user.router)
 app.include_router(booking_attraction.router)
 app.include_router(order.router)
+app.include_router(member_page.router)
