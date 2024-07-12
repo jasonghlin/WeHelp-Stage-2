@@ -11,7 +11,7 @@ import json
 import logging
 import redis
 
-pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+pool = redis.ConnectionPool(host='taipei-day-trip-redis-z2mtgi.serverless.usw2.cache.amazonaws.com', port=6379, db=0)
 r = redis.Redis(connection_pool=pool)
 
 router = APIRouter(
