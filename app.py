@@ -36,19 +36,19 @@ app.add_middleware(
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
 async def index(request: Request):
-	return serve_static_page("index.html")
+	return static_page("index.html")
 @app.get("/attraction/{id}", include_in_schema=False)
 async def attraction(request: Request, id: int):
-	return serve_static_page("attraction.html")
+	return static_page("attraction.html")
 @app.get("/booking", include_in_schema=False)
 async def booking(request: Request):
-	return serve_static_page("booking.html")
+	return static_page("booking.html")
 @app.get("/thankyou", include_in_schema=False)
 async def thankyou(request: Request):
-	return serve_static_page("thankyou.html")
+	return static_page("thankyou.html")
 @app.get("/memberpage", include_in_schema=False)
 async def thankyou(request: Request):
-	return serve_static_page("member page.html")
+	return static_page("member page.html")
 # -----------------------------------------------
 
 
@@ -60,14 +60,14 @@ app.include_router(order.router)
 app.include_router(member_page.router)
 
 
-def serve_static_page(file_name: str):
+def static_page(file_name: str):
     if is_production:
         return HTMLResponse(content=get_html_content(file_name), status_code=200)
     else:
         return FileResponse(f"./static/{file_name}", media_type="text/html")
 
 
-def get_html_content(file_name: str) -> str:
+def get_html_content(file_name: str):
     if is_production:
         url = f"{CDN_BASE_URL}/{file_name}"
         response = requests.get(url)
