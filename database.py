@@ -607,7 +607,3 @@ def get_db_user_img(user_id):
         db.close()
         db_connection.close()
 
-
-
-CREATE USER 'newuser'@'172.31.%%' IDENTIFIED WITH mysql_native_password BY '>gA%c|O?))alGuB5GYIqfvmR{[9J';
-GRANT ALL PRIVILEGES ON taipei_day_trip.* TO 'newuser'@'172.31.%.%';
