@@ -13,7 +13,7 @@ with open("taipei-attractions.json", 'r') as file:
 
 
 dbconfig = {
-    "user": "newuser",
+    "user": "admin",
     "password": mysql_password,
     "host": "localhost"
 }
