@@ -15,7 +15,7 @@ with open("taipei-attractions.json", 'r') as file:
 dbconfig = {
     "user": "admin",
     "password": mysql_password,
-    "host": "localhost"
+    "host": "taipei-day-trip-db.c90ws4we0uzp.us-west-2.rds.amazonaws.com"
 }
 
 cnxpool = mysql.connector.pooling.MySQLConnectionPool(
