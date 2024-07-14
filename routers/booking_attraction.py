@@ -10,19 +10,22 @@ from routers.user import bcrypt_context, SECRET_KEY, ALGORITHM, verify_token, Su
 import json
 import logging
 import redis
+from redis.connection import SSLConnection, ConnectionPool
+import ssl
 
-redis_host = "clustercfg.taipei-day-trip-redis-server.z2mtgi.usw2.cache.amazonaws.com"
-redis_port = 6379  # 默認端口,根據你的配置可能會不同
 
-# 創建連接池
-pool = redis.ConnectionPool(
-    host=redis_host,
-    port=redis_port,
-    decode_responses=True  # 自動將 bytes 解碼為 str
+REDIS_HOST = "clustercfg.taipei-day-trip-redis-server.z2mtgi.usw2.cache.amazonaws.com"
+REDIS_PORT = 6379  # 默认端口
+
+# 创建 Redis 客户端
+r = redis.Redis(
+    host=REDIS_HOST,
+    port=REDIS_PORT,
+    ssl=True,
+    ssl_cert_reqs=None,
+    decode_responses=True
 )
 
-# 創建 Redis 客戶端
-r = redis.Redis(connection_pool=pool)
 
 # 測試連接
 try:
