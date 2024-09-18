@@ -6,11 +6,14 @@ from fastapi import Depends
 
 load_dotenv(dotenv_path='./.env')
 mysql_password = os.environ.get("MYSQL")
+ENV = os.environ.get("ENV", "")
+
+USER = "admin" if ENV == "production" else "root"
 
 def get_db_connection():
     try:
        dbconfig = {
-        "user": "root",
+        "user": "admin",
         "password": mysql_password,
         "host": "localhost",
         "database": "taipei_day_trip"
