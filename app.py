@@ -80,10 +80,10 @@ def static_page(file_name: str):
 
 def get_html_content(file_name: str):
     if is_production:
-        url = f"{CDN_BASE_URL}/{file_name}"
+        url = f"{CDN_BASE_URL}/static/{file_name}"
         response = requests.get(url)
         if response.status_code == 200:
-            content = response.text.replace("/static/", f"{CDN_BASE_URL}/static/")
+            content = response.text.replace("/static/", f"{CDN_BASE_URL}/")
 
         else:
             raise HTTPException(status_code=404, detail="Page not found")
