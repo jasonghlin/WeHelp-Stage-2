@@ -84,7 +84,11 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     websocket_queue[user_id] = websocket
     try:
         while True:
-            await websocket.receive_text()
+            message = await websocket.receive_text()
+            print(f"Received message from user {user_id}: {message}")
+            data = json.loads(message)
+            if data:
+                await websocket_queue[user_id].send_json({"action": "refresh_booking"})
     except WebSocketDisconnect:
         del websocket_queue[user_id]
         print("ws disconnct")
