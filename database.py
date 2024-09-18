@@ -6,7 +6,7 @@ from fastapi import Depends
 
 load_dotenv(dotenv_path='./.env')
 mysql_password = os.environ.get("MYSQL")
-ENV = os.environ.get("ENVIRONMENT=", "")
+ENV = os.environ.get("ENVIRONMENT", "")
 
 USER = "admin" if ENV == "production" else "root"
 HOST = os.environ.get("MYSQL_HOST", "") if ENV == "production" else "localhost"

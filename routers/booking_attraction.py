@@ -15,7 +15,7 @@ import redis
 
 load_dotenv(dotenv_path='../.env')
 
-ENV = os.environ.get("ENV", "")
+ENV = os.environ.get("ENVIRONMENT=", "")
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "") if ENV == "production" else "localhost"
 REDIS_PORT = 6379  # 默認端口,根據你的配置可能會不同
