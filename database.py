@@ -9,13 +9,14 @@ mysql_password = os.environ.get("MYSQL")
 ENV = os.environ.get("ENV", "")
 
 USER = "admin" if ENV == "production" else "root"
+HOST = os.environ.get("MYSQL_HOST", "") if ENV == "production" else "localhost"
 
 def get_db_connection():
     try:
        dbconfig = {
-        "user": "admin",
+        "user": USER,
         "password": mysql_password,
-        "host": "localhost",
+        "host": HOST,
         "database": "taipei_day_trip"
     }
        cnxpool = mysql.connector.pooling.MySQLConnectionPool(
