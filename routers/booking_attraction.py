@@ -82,27 +82,15 @@ websocket_queue = {}
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await websocket.accept()
     websocket_queue[user_id] = websocket
-
-    async def receive_messages():
-        try:
-            while True:
-                data = await websocket.receive_text()
-                # 如果需要，處理接收到的訊息
-        except WebSocketDisconnect:
-            del websocket_queue[user_id]
-        except Exception as e:
-            print(f"Error in websocket connection: {e}")
-            await websocket.close()
-
-    # 創建接收訊息的任務
-    receive_task = asyncio.create_task(receive_messages())
-
     try:
-        await asyncio.Future()  # 保持連線
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        del websocket_queue[user_id]
+        print("ws disconnct")
     except Exception as e:
         print(f"Error in websocket connection: {e}")
-    finally:
-        del websocket_queue[user_id]
+        await websocket.close()
 
 
 async def notify_booking_update(user_id: str):
