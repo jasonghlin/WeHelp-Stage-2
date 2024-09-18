@@ -23,7 +23,8 @@ pool = redis.ConnectionPool(
     host=REDIS_HOST,
     port=redis_port,
     decode_responses=True,  # 自動將 bytes 解碼為 str
-	ssl=True
+	ssl=True,
+	ssl_cert_reqs=None
 )
 
 # 創建 Redis 客戶端
