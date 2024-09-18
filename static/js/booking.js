@@ -170,6 +170,8 @@ async function checkLoginStatus(token) {
       },
     });
     // console.log("Response status:", response.status); // 新增這一行
+    console.log("Response status:", response.status); // 新增這行
+    console.log("Response headers:", response.headers); // 新增這行
 
     if (!response.ok) {
       console.error("Error:", response.statusText);
@@ -201,6 +203,8 @@ async function checkStatus() {
   const userInfo = await checkLoginStatus(jwtToken);
   if (!userInfo) {
     window.location = "/";
+  } else {
+    user_info = userInfo; // 將區域變數賦值給全域變數
   }
   return;
 }
@@ -515,7 +519,7 @@ async function userBookings() {
           <div class="travel-position">地點：<span>${
             booking.data.attraction.address
           }</span></div>
-          <img src="/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${
+          <img src="https://d3u8ez3u55dl9n.cloudfront.net/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${
             booking.data.attraction.id
           }">
         </div>
@@ -537,13 +541,13 @@ async function userBookings() {
 
 let socket;
 
-function connectWebSocket() {
+async function connectWebSocket() {
   if (socket && socket.readyState !== WebSocket.CLOSED) {
     console.log("WebSocket is already open or connecting");
     return;
   }
-
-  socket = new WebSocket(`wss://${window.location.host}/ws/booking/1`);
+  const userId = user_info.data.id;
+  socket = new WebSocket(`wss://${window.location.host}/ws/booking/${userId}`);
 
   socket.onopen = function (event) {
     console.log("WebSocket connection opened:", event);
@@ -572,10 +576,11 @@ function connectWebSocket() {
     setTimeout(connectWebSocket, 1000);
   };
 }
-connectWebSocket();
+
 async function init() {
   await checkStatus();
   await userBookings();
+  await connectWebSocket();
 }
 
 init();
