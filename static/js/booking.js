@@ -431,7 +431,7 @@ async function updateBookingInfo() {
           <div class="travel-position">地點：<span>${
             booking.data.attraction.address
           }</span></div>
-          <img src="/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${
+          <img src="https://d3u8ez3u55dl9n.cloudfront.net/static/images/deletetrash.png" class="delete-icon" alt="delete-icon" data-attraction="${
             booking.data.attraction.id
           }">
         </div>
@@ -543,6 +543,14 @@ async function userBookings() {
   }
 }
 
+function startHeartbeat() {
+  setInterval(() => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type: "heartbeat" }));
+    }
+  }, 30000); // 每30秒发送一次心跳
+}
+
 let socket;
 
 async function connectWebSocket() {
@@ -556,6 +564,7 @@ async function connectWebSocket() {
   socket.onopen = function (event) {
     console.log("WebSocket connection opened:", event);
     socket.send(JSON.stringify({ type: "get_booking" }));
+    startHeartbeat();
   };
 
   socket.onmessage = async function (event) {

@@ -87,14 +87,17 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             message = await websocket.receive_text()
             print(f"Received message from user {user_id}: {message}")
             data = json.loads(message)
-            if data:
+            if data.get("type") == "heartbeat":
+                await websocket.send_json({"type": "heartbeat_ack"})
+            elif data:
                 await websocket_queue[user_id].send_json({"action": "refresh_booking"})
     except WebSocketDisconnect:
         del websocket_queue[user_id]
-        print("ws disconnct")
+        print("ws disconnect")
     except Exception as e:
         print(f"Error in websocket connection: {e}")
         await websocket.close()
+
 
 
 async def notify_booking_update(user_id: str):
