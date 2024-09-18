@@ -83,7 +83,7 @@ def get_html_content(file_name: str):
         url = f"{CDN_BASE_URL}/{file_name}"
         response = requests.get(url)
         if response.status_code == 200:
-            content = response.text.replace("/static/", f"{CDN_BASE_URL}/")
+            content = response.text.replace("/static/", f"{CDN_BASE_URL}/static/")
 
         else:
             raise HTTPException(status_code=404, detail="Page not found")
