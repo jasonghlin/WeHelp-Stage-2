@@ -9,19 +9,19 @@ from datetime import date
 from routers.user import bcrypt_context, SECRET_KEY, ALGORITHM, verify_token, SuccessResponse, ErrorResponse
 import json
 import logging
-from rediscluster import RedisCluster
 from dotenv import load_dotenv
 import os
 import redis
 
 load_dotenv(dotenv_path='../.env')
 
-REDIS_HOST = os.environ.get("REDIS_HOST", "")
+ENV = os.environ.get("ENV", "")
 
-
+REDIS_HOST = os.environ.get("REDIS_HOST", "") if ENV == "production" else "localhost"
 REDIS_PORT = 6379  # 默認端口,根據你的配置可能會不同
+SSL = True if ENV == "production" else False
 
-startup_nodes = [{"host": REDIS_HOST, "port": REDIS_PORT}]
+
 
 
 # 創建 Redis 客戶端
@@ -30,7 +30,7 @@ try:
     r = redis.Redis(
         host=REDIS_HOST,
         port=REDIS_PORT,
-        ssl=True,  # 使用 SSL/TLS
+        ssl=SSL,  # 使用 SSL/TLS
         ssl_cert_reqs=None  # 跳過 SSL 驗證
     )
     

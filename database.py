@@ -10,9 +10,9 @@ mysql_password = os.environ.get("MYSQL")
 def get_db_connection():
     try:
        dbconfig = {
-        "user": "admin",
+        "user": "root",
         "password": mysql_password,
-        "host": "taipei-day-trip-db.c90ws4we0uzp.us-west-2.rds.amazonaws.com",
+        "host": "localhost",
         "database": "taipei_day_trip"
     }
        cnxpool = mysql.connector.pooling.MySQLConnectionPool(
