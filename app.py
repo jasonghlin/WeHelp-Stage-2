@@ -63,9 +63,19 @@ app.include_router(member_page.router)
 
 def static_page(file_name: str):
     if is_production:
-        return HTMLResponse(content=get_html_content(file_name), status_code=200)
+        content = get_html_content(file_name)
+        if content:
+            print(f"Successfully loaded {file_name} from CDN")
+        return HTMLResponse(content=content, status_code=200)
     else:
-        return FileResponse(f"./static/{file_name}", media_type="text/html")
+        path = f"./static/{file_name}"
+        if os.path.exists(path):
+            print(f"Serving static file from {path}")
+            return FileResponse(path, media_type="text/html")
+        else:
+            print(f"Static file not found: {path}")
+            raise HTTPException(status_code=404, detail="Page not found")
+
 
 
 def get_html_content(file_name: str):

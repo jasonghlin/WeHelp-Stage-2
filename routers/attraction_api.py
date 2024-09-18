@@ -9,6 +9,7 @@ from rediscluster import RedisCluster
 import logging
 from dotenv import load_dotenv
 import os
+import redis
 
 logging.basicConfig(level=logging.INFO)
 
@@ -24,11 +25,11 @@ startup_nodes = [{"host": REDIS_HOST, "port": REDIS_PORT}]
 # 創建 Redis 客戶端
 try:
     # 創建 RedisCluster 客戶端
-    r = RedisCluster(
-        startup_nodes=startup_nodes,
-        decode_responses=True,
-        ssl=True,  # 啟用 SSL/TLS
-        ssl_cert_reqs=None 
+    r = redis.Redis(
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        ssl=True,  # 使用 SSL/TLS
+        ssl_cert_reqs=None  # 跳過 SSL 驗證
     )
     
     # 測試連接
