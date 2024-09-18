@@ -6,6 +6,7 @@ from routers import attraction_api, mrts, user, booking_attraction, order, membe
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
+import requests
 
 load_dotenv(dotenv_path='./.env')
 origins = [
