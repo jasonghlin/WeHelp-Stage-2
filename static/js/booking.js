@@ -543,7 +543,7 @@ function connectWebSocket() {
     return;
   }
 
-  socket = new WebSocket(`ws://${window.location.host}/ws/booking/1`);
+  socket = new WebSocket(`wss://${window.location.host}/ws/booking/1`);
 
   socket.onopen = function (event) {
     console.log("WebSocket connection opened:", event);

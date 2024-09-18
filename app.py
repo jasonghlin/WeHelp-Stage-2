@@ -12,7 +12,7 @@ load_dotenv(dotenv_path='./.env')
 origins = [
     "http://localhost",
     "http://localhost:8000",
-
+    "https://www.pharmengineer.cloudns.be"
 ]
 
 

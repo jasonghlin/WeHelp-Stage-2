@@ -77,7 +77,7 @@ class FailedResponse(BaseModel):
     message: str
 
 websocket_queue = {}
-@router.websocket("/wss/booking/{user_id}")
+@router.websocket("/ws/booking/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await websocket.accept()
     websocket_queue[user_id] = websocket
