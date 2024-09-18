@@ -24,7 +24,8 @@ redis_port = 6379  # 默認端口,根據你的配置可能會不同
 pool = redis.ConnectionPool(
     host=REDIS_HOST,
     port=redis_port,
-    decode_responses=True  # 自動將 bytes 解碼為 str
+    decode_responses=True,  # 自動將 bytes 解碼為 str
+    ssl=True
 )
 
 # 創建 Redis 客戶端
