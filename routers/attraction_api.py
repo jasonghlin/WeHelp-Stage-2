@@ -5,7 +5,7 @@ from typing import List
 from database import get_db_attractions, get_db_attraction_by_id
 from starlette import status
 import json
-import redis
+from rediscluster import RedisCluster
 import logging
 from dotenv import load_dotenv
 import os
@@ -16,25 +16,25 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv(dotenv_path='../.env')
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "")
-redis_port = 6379  # 默認端口,根據你的配置可能會不同
+REDIS_PORT = 6379  # 默認端口,根據你的配置可能會不同
 
-# 創建連接池
-pool = redis.ConnectionPool(
-    host=REDIS_HOST,
-    port=redis_port,
-    decode_responses=True,  # 自動將 bytes 解碼為 str
-	ssl=True,
-	ssl_cert_reqs=None
-)
+startup_nodes = [{"host": REDIS_HOST, "port": REDIS_PORT}]
+
 
 # 創建 Redis 客戶端
-r = redis.Redis(connection_pool=pool)
-
-# 測試連接
 try:
+    # 創建 RedisCluster 客戶端
+    r = RedisCluster(
+        startup_nodes=startup_nodes,
+        decode_responses=True,
+        ssl=True,  # 啟用 SSL/TLS
+        ssl_cert_reqs=None 
+    )
+    
+    # 測試連接
     r.ping()
-    print("成功連接到 ElastiCache!")
-except redis.ConnectionError as e:
+    print("成功連接到 AWS ElastiCache Redis Cluster！")
+except Exception as e:
     print(f"連接失敗: {e}")
 
 
