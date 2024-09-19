@@ -557,8 +557,14 @@ async function userImg() {
       },
     });
     let url = await response.json();
-    if (url.detail !== "Token decode error") {
-      document.querySelector(".photo > img").src = url.url;
+    if (url?.detail !== "Token decode error" || url === null) {
+      document.querySelector(".photo > a > img").src =
+        url?.url ||
+        "https://d3u8ez3u55dl9n.cloudfront.net/static/images/user.png";
+      document.querySelector(".photo").classList.remove("hidden");
+      if (url) {
+        localStorage.setItem("proImg", url.url);
+      }
     }
   }
 }
