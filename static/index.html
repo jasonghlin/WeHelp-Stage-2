@@ -20,6 +20,9 @@
       <ul class="menu">
         <li>預留行程</li>
         <li>登入/註冊</li>
+        <div class="photo hidden">
+          <a href="/memberpage"><img src="/static/images/user.png" alt="user img"></a>
+        </div>
       </ul>
     </nav>
   </header>
@@ -35,8 +38,8 @@
             <img src="/static/images/form-delete.png" alt="from-exit">
           </div>
           <h3>登入會員帳號</h3>
-          <input id="login-email" class="form-input" type="email" placeholder="輸入電子信箱" required>
-          <input id="login-password" class="form-input" type="password" placeholder="輸入密碼" required>
+          <input id="login-email" class="form-input" type="email" placeholder="輸入電子信箱" value="demo@gmail.com" required>
+          <input id="login-password" class="form-input" type="password" placeholder="輸入密碼" value="demo" required>
           <div class="login-error-message"></div>
           <button>登入帳戶</button>
           <div class="to-register-wrapper">

@@ -1,7 +1,7 @@
 from fastapi import *
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from database import check_db_user, create_db_user, get_user
+from pydantic import BaseModel, EmailStr
+from database import check_db_user, create_db_user, get_user, update_user_name, update_user_email, update_user_password
 from starlette import status
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
@@ -9,6 +9,7 @@ import jwt
 from dotenv import load_dotenv
 import os
 from datetime import timedelta, datetime
+from typing import Optional
 
 load_dotenv(dotenv_path='../.env')
 
@@ -54,6 +55,11 @@ class LoginStatusResponse(BaseModel):
 
 class LoginStatus(BaseModel):
     data: LoginStatusResponse
+
+class UserInfo(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
 
 @router.post("/api/user", status_code=status.HTTP_200_OK, summary="註冊一個新的會員", responses={200: {"model": SuccessResponse}, 400: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
 async def create_user(create_user_request: CreateUserRequest):
@@ -132,3 +138,30 @@ async def login_for_access_token(user_login_request: UserLoginRequest):
         )
     token = create_access_token(user.get("id"), user.get("name"), user.get("email"), timedelta(days=7))
     return SuccessResponseToken(token = token)
+
+@router.post("/api/user/edit", status_code=status.HTTP_200_OK)
+async def update_user_info(user_info: UserInfo, token: str = Depends(oauth2_scheme)):
+    payload = verify_token(token)
+    if payload and user_info.name:
+        result = update_user_name(user_info.name, payload.get("id"))
+        if result:
+            token = create_access_token(user_id=payload.get("id"), email=payload.get("sub"), name=user_info.name, expires_delta=timedelta(days=7))
+            return SuccessResponseToken(token = token)
+    elif payload and user_info.email:
+        print(user_info)
+        user_exist = check_db_user(user_info)
+        if user_exist:
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"error": True, "message": "此 email 已註冊過"}
+            )
+        else:
+            result = update_user_email(user_info.email, payload.get("id"))
+            if result:
+                token = create_access_token(user_id=payload.get("id"), email=user_info.email, name=payload.get("name"), expires_delta=timedelta(days=7))
+                return SuccessResponseToken(token = token)
+    elif payload and user_info.password:
+        hashed_password = bcrypt_context.hash(user_info.password)
+        result = update_user_password(hashed_password, payload.get("id"))
+        if result:
+            return SuccessResponse(ok=True)

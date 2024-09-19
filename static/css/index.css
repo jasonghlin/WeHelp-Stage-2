@@ -256,7 +256,7 @@ nav {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 footer {
@@ -271,6 +271,32 @@ footer {
     padding: 4rem, 84.3rem, 4rem, 84.3rem;
     margin-top: 2rem;
     color: white;
+}
+
+.photo {
+    height: 3rem;
+    width: 3rem;
+    border-radius: 50%;
+    border: .3rem solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    object-fit: cover;
+}
+
+.photo > a {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.photo > a > img {
+    width: 100%;
+    object-fit: cover;
+
 }
 
 /* main */

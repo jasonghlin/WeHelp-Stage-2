@@ -14,7 +14,7 @@ const toRegisterLink = document.querySelector(".to-register-link");
 const toLoginLink = document.querySelector(".to-login-link");
 const footer = document.querySelector("footer");
 const logo = document.querySelector(".logo");
-const jwtToken = localStorage.getItem("session");
+
 logo.addEventListener("click", () => {
   window.location = "/";
 });
@@ -90,6 +90,7 @@ function handleRegister() {
 
     if (!response.ok) {
       const errorData = await response.json();
+      // console.error("Error:", errorData);
       registerErrorDiv.style.color = "red";
       registerErrorDiv.textContent = errorData.message;
     } else {
@@ -120,6 +121,7 @@ function logoutEvent() {
   login.textContent = "登入/註冊";
   login.addEventListener("click", loginEvent);
   localStorage.removeItem("session");
+  localStorage.removeItem("proImg");
   window.location.reload();
 }
 
@@ -157,8 +159,7 @@ function handleLogin() {
 
 handleLogin();
 
-let user_info;
-// token verify, check login status
+// token verify, check login status, logout event
 async function checkLoginStatus(token) {
   const response = await fetch("/api/user/auth", {
     method: "GET",
@@ -167,23 +168,22 @@ async function checkLoginStatus(token) {
       Authorization: `Bearer ${token}`,
     },
   });
-  // console.log("Response status:", response.status); // 新增這一行
+  console.log("Response status:", response.status); // 新增這一行
 
   if (!response.ok) {
     console.error("Error:", response.statusText);
     // modalControl("block");
     return false;
   }
-  user_info = await response.json();
-  // console.log(user_info);
-  if (user_info) {
+  const data = await response.json();
+  if (data) {
     loginEmailInput.value = "";
     loginEmailPassword.value = "";
     modalControl("hidden");
     login.removeEventListener("click", loginEvent);
     login.textContent = "登出系統";
     login.addEventListener("click", logoutEvent);
-    return user_info;
+    return data;
   } else {
     modalControl("block");
     return false;
@@ -193,13 +193,61 @@ async function checkLoginStatus(token) {
 async function checkStatus() {
   const jwtToken = localStorage.getItem("session");
   const userInfo = await checkLoginStatus(jwtToken);
-  if (!userInfo) {
-    window.location = "/";
-  }
   return;
 }
 
 checkStatus();
+
+// handle booking plan
+function handleBookingPlan() {
+  const bookinPlanBtn = document.querySelector(".menu li:nth-child(1)");
+  bookinPlanBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const jwtToken = localStorage.getItem("session");
+    console.log(jwtToken);
+    if (jwtToken) {
+      const userInfo = await checkLoginStatus(jwtToken);
+      if (userInfo) {
+        window.location.href = "/booking";
+        console.log("ok");
+      } else {
+        modalControl("block");
+      }
+    } else {
+      modalControl("block");
+    }
+  });
+}
+
+handleBookingPlan();
+
+async function userImg() {
+  let sessionImgURL = localStorage.getItem("proImg");
+
+  if (sessionImgURL) {
+    document.querySelector(".photo > a > img").src = sessionImgURL;
+    document.querySelector(".photo").classList.remove("hidden");
+  } else {
+    let response = await fetch("/api/upload", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("session")}`,
+      },
+    });
+    let url = await response.json();
+    if (url?.detail !== "Token decode error" || url === null) {
+      document.querySelector(".photo > a > img").src =
+        url?.url ||
+        "https://d3u8ez3u55dl9n.cloudfront.net/static/images/user.png";
+      document.querySelector(".photo").classList.remove("hidden");
+      if (url) {
+        localStorage.setItem("proImg", url.url);
+      }
+    }
+  }
+}
+
+userImg();
 
 // main
 async function getOrder(orderNumber, token) {

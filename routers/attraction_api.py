@@ -5,10 +5,40 @@ from typing import List
 from database import get_db_attractions, get_db_attraction_by_id
 from starlette import status
 import json
-from redis_client import redis_client
 import logging
+from dotenv import load_dotenv
+import os
+import redis
 
 logging.basicConfig(level=logging.INFO)
+
+
+load_dotenv(dotenv_path='../.env')
+ENV = os.environ.get("ENVIRONMENT", "")
+
+REDIS_HOST = os.environ.get("REDIS_HOST", "") if ENV == "production" else "localhost"
+REDIS_PORT = 6379  # 默認端口,根據你的配置可能會不同
+SSL = True if ENV == "production" else False
+
+
+
+
+# 創建 Redis 客戶端
+try:
+    # 創建 RedisCluster 客戶端
+    r = redis.Redis(
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        ssl=SSL,  # 使用 SSL/TLS
+        ssl_cert_reqs=None  # 跳過 SSL 驗證
+    )
+    
+    # 測試連接
+    r.ping()
+    print("成功連接到 AWS ElastiCache Redis Cluster！")
+except Exception as e:
+    print(f"連接失敗: {e}")
+
 
 router = APIRouter(
     tags=['Attraction']
@@ -43,10 +73,10 @@ class AttractionByIdResponse(BaseModel):
 async def get_attractions( keyword: str | None = None, page: int = Query(ge=0)):
 	cache_key = f"attractions:{keyword}:{page}"
 	logging.info(f"Checking cache for key: {cache_key}")
-	cached_data = redis_client.get(cache_key)
+	cached_data = r.get(cache_key)
 	if cached_data:
 		logging.info(f"Cache hit for key: {cache_key}")
-		return AttractionResponse.parse_raw(cached_data)
+		return AttractionResponse.model_validate_json(cached_data)
 	
 	logging.info(f"Cache miss for key: {cache_key}, fetching from database")
 	raw_results = get_db_attractions(page, keyword)
@@ -74,7 +104,7 @@ async def get_attractions( keyword: str | None = None, page: int = Query(ge=0)):
 		next_page = page + 1
 
 	response = AttractionResponse(nextPage=next_page, data=attractions)
-	redis_client.set(cache_key, response.json().encode('utf-8'), ex=3600)  # 快取 5 分鐘
+	r.set(cache_key, response.model_dump_json().encode('utf-8'), ex=3600)  # 快取 5 分鐘
 	logging.info(f"Data cached with key: {cache_key}")
 	
 	return response
@@ -84,10 +114,10 @@ async def get_attractions( keyword: str | None = None, page: int = Query(ge=0)):
 async def get_attraction_by_id(attractionId: int):
 	cache_key = f"attraction:{attractionId}"
 	logging.info(f"Checking cache for key: {cache_key}")
-	cached_data = redis_client.get(cache_key)
+	cached_data = r.get(cache_key)
 	if cached_data:
 		logging.info(f"Cache hit for key: {cache_key}")
-		return AttractionByIdResponse.parse_raw(cached_data)
+		return AttractionByIdResponse.model_validate_json(cached_data)
 	
 	logging.info(f"Cache miss for key: {cache_key}, fetching from database")
 	try:
@@ -110,7 +140,7 @@ async def get_attraction_by_id(attractionId: int):
 				images = json.loads(result["images"])
 		)
 		response_data = AttractionByIdResponse(data=response)
-		redis_client.set(cache_key, response_data.json().encode('utf-8'), ex=3600)  # 快取 1 小時
+		r.set(cache_key, response_data.model_dump_json().encode('utf-8'), ex=3600)  # 快取 1 小時
 		logging.info(f"Data cached with key: {cache_key}")
 
 		return response_data

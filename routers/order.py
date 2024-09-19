@@ -1,16 +1,13 @@
 from fastapi import *
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr
-from database import create_db_order_contact, fetch_db_user_booking, get_db_order_info, update_db_order_contact
+from database import create_db_order_contact, fetch_db_user_booking, get_db_order_info, update_db_order_contact, get_db_user_order_info
 from starlette import status
-from passlib.context import CryptContext
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
 from dotenv import load_dotenv
-from datetime import timedelta, datetime
+from datetime import datetime
 from routers.user import oauth2_scheme, bcrypt_context, SECRET_KEY, ALGORITHM, verify_token, ErrorResponse
 from datetime import date
-from typing import List
+from typing import List, Optional
 from dotenv import load_dotenv
 import os
 import requests
@@ -29,15 +26,16 @@ class Contact(BaseModel):
     phone: str
 
 class Attraction(BaseModel):
-    id: int
-    name: str
-    address: str
-    image: str
+    id: Optional[int]
+    name: Optional[str]
+    address: Optional[str]
+    image: Optional[str]
+
 
 class Trip(BaseModel):
     attraction: Attraction
-    date: date
-    time: str
+    date: Optional[date]
+    time: Optional[str]
 
 class OrderDetails(BaseModel):
     price: int
@@ -68,6 +66,9 @@ class OrderNumberResponseDetail(BaseModel):
 
 class OrderNumberResponse(BaseModel):
     data: OrderNumberResponseDetail
+
+class OrderUserResponse(BaseModel):
+    data: List[OrderNumberResponseDetail]
 
 def create_order_number(order_id):
     now = datetime.now()
@@ -133,7 +134,6 @@ async def get_order_info(orderNumber: str, token: str = Depends(oauth2_scheme)):
     payload = verify_token(token)
     if payload:
         trips = []
-        print(type(orderNumber))
         results = get_db_order_info(payload.get("id"), orderNumber)
         # print(results)
         if results:
@@ -155,6 +155,56 @@ async def get_order_info(orderNumber: str, token: str = Depends(oauth2_scheme)):
             content={"error": True, "message": "未登入系統，拒絕存取"}
         )
 
+
+# 將資料轉換成指定的 Pydantic 模型
+def transform_data_to_model(data):
+    grouped_data = {}
+    
+    for item in data:
+        number = item['number']
+        if number:
+            if number not in grouped_data:
+                grouped_data[number] = {
+                    'number': number,
+                    'price': item['price'],
+                    'trip': [],
+                    'contact': Contact(name=item['name'], email=item['email'], phone=item['phone']),
+                    'status': item['status']
+                }
+            images = json.loads(item['images']) if item['images'] else []
+            attraction = Attraction(
+                id=item['attraction_id'],
+                name=item['attraction_name'],
+                address=item['address'],
+                image=images[0] if images else None
+            )
+            trip = Trip(attraction=attraction, date=item['date'], time=item['time'])
+            grouped_data[number]['trip'].append(trip)
+    
+    response_details = []
+    for key, value in grouped_data.items():
+        response_details.append(OrderNumberResponseDetail(**value))
+    
+    return response_details
+
+
+
+@router.get("/api/order/all/{user_id}", status_code=status.HTTP_200_OK, summary="根據訂單編號取得訂單資訊")
+async def get_order_info(user_id: int, token: str = Depends(oauth2_scheme)):
+    payload = verify_token(token)
+    if payload and payload.get("id") == user_id:
+        trips = []
+        results = get_db_user_order_info(payload.get("id"))
+        if results:
+            order_number_response_details = transform_data_to_model(results)
+            return OrderUserResponse(data=order_number_response_details)
+        else: 
+            return ErrorResponse(error = True, message = f"找不到訂單，輸入不正確或其他原因")
+    else:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"error": True, "message": "未登入系統，拒絕存取"}
+        )
 
              
     

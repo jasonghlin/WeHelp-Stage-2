@@ -14,6 +14,7 @@ const toRegisterLink = document.querySelector(".to-register-link");
 const toLoginLink = document.querySelector(".to-login-link");
 const footer = document.querySelector("footer");
 const logo = document.querySelector(".logo");
+const CDN_URL = "https://d3u8ez3u55dl9n.cloudfront.net";
 
 logo.addEventListener("click", () => {
   window.location = "/";
@@ -121,6 +122,7 @@ function logoutEvent() {
   login.textContent = "登入/註冊";
   login.addEventListener("click", loginEvent);
   localStorage.removeItem("session");
+  localStorage.removeItem("proImg");
   window.location.reload();
 }
 
@@ -180,7 +182,7 @@ async function checkLoginStatus(token) {
     loginEmailPassword.value = "";
     modalControl("hidden");
     login.removeEventListener("click", loginEvent);
-    login.textContent = "登出系統";
+    login.textContent = "登出";
     login.addEventListener("click", logoutEvent);
     return data;
   } else {
@@ -220,6 +222,32 @@ function handleBookingPlan() {
 
 handleBookingPlan();
 
+async function userImg() {
+  let sessionImgURL = localStorage.getItem("proImg");
+
+  if (sessionImgURL) {
+    document.querySelector(".photo > a > img").src = sessionImgURL;
+    document.querySelector(".photo").classList.remove("hidden");
+  } else {
+    let response = await fetch("/api/upload", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("session")}`,
+      },
+    });
+    let url = await response.json();
+    if (url?.detail !== "Token decode error" || url === null) {
+      document.querySelector(".photo > a > img").src =
+        url?.url || `${CDN_URL}/static/images/user.png`;
+      document.querySelector(".photo").classList.remove("hidden");
+      if (url) {
+        localStorage.setItem("proImg", url.url);
+      }
+    }
+  }
+}
+
+userImg();
 // main
 
 function createElementWithClass(element, className) {
@@ -246,12 +274,12 @@ async function listBar() {
 
   let prevBtn = createElementWithClass("div", "scroll-btn prev-btn");
   let prevBtnImage = createElementWithClass("img", "prev-btn-img");
-  prevBtnImage.src = "../static/images/buttons/arrow-left-default.png";
+  prevBtnImage.src = `${CDN_URL}/static/images/buttons/arrow-left-default.png`;
   prevBtn.appendChild(prevBtnImage);
 
   let nextBtn = createElementWithClass("div", "scroll-btn next-btn");
   let nextBtnImage = createElementWithClass("img", "next-btn-img");
-  nextBtnImage.src = "../static/images/buttons/arrow-right-default.png";
+  nextBtnImage.src = `${CDN_URL}/static/images/buttons/arrow-right-default.png`;
   nextBtn.appendChild(nextBtnImage);
 
   let mrtList = createElementWithClass("div", "mrt-list");
@@ -305,7 +333,7 @@ function createAttractionElement(data, imgIndex) {
   let attractionFigure = createElementWithClass("div", "attraction-figure");
   let attractionImgWrapper = createElementWithClass("div", "image-wrapper");
   let attractionImg = createElementWithClass("img", "attraction-img");
-  attractionImg.src = "./static/images/loading.gif";
+  attractionImg.src = `${CDN_URL}/static/images/loading.gif`;
   // attractionImg.dataset.src = `https://${data.images[0]}`;
   let urlSuffix = data.images[0].split("/").pop();
   // https://d3u8ez3u55dl9n.cloudfront.net

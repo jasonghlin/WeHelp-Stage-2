@@ -6,13 +6,18 @@ from fastapi import Depends
 
 load_dotenv(dotenv_path='./.env')
 mysql_password = os.environ.get("MYSQL")
+ENV = os.environ.get("ENVIRONMENT", "")
+
+USER = "admin" if ENV == "production" else "root"
+HOST = os.environ.get("MYSQL_HOST", "") if ENV == "production" else "localhost"
+
 
 def get_db_connection():
     try:
        dbconfig = {
-        "user": "newuser",
+        "user": USER,
         "password": mysql_password,
-        "host": "localhost",
+        "host": HOST,
         "database": "taipei_day_trip"
     }
        cnxpool = mysql.connector.pooling.MySQLConnectionPool(
@@ -192,6 +197,54 @@ def get_user(user = Depends(get_user_dependencies)):
         db.close()
         db_connection.close()
 
+
+def update_user_name(new_name, user_id):
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        user_query = ("UPDATE users SET name = %s WHERE id = %s")
+        val = (new_name, user_id)
+        db.execute(user_query, val)
+        db_connection.commit()
+        return True
+    except Exception as e:
+        logging.error("Error when update user name: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+def update_user_email(new_email, user_id):
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        user_query = ("UPDATE users SET email = %s WHERE id = %s")
+        val = (new_email, user_id)
+        db.execute(user_query, val)
+        db_connection.commit()
+        return True
+    except Exception as e:
+        logging.error("Error when update user email: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+def update_user_password(new_password, user_id):
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        user_query = ("UPDATE users SET password = %s WHERE id = %s")
+        val = (new_password, user_id)
+        db.execute(user_query, val)
+        db_connection.commit()
+        return True
+    except Exception as e:
+        logging.error("Error when update user password: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
 
 def create_bookings_table():
     try:
@@ -462,3 +515,100 @@ def get_db_order_info(user_id, order_number):
     finally:
         db.close()
         db_connection.close()
+
+def get_db_user_order_info(user_id):
+    try: 
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        order_query = ("""
+            SELECT orders.user_id, orders.number, orders.price, orders.status, orders.paid, bookings.date, bookings.time, contact.name, contact.email, contact.phone, attractions.id AS attraction_id, attractions.name AS attraction_name, attractions.address, attractions.images
+            FROM orders
+            LEFT JOIN contact on orders.id = contact.order_id
+            LEFT JOIN orders_bookings_relation ON orders.id = orders_bookings_relation.order_id
+            LEFT JOIN bookings ON orders_bookings_relation.booking_id = bookings.id
+            LEFT JOIN attractions ON bookings.attraction_id = attractions.id
+            WHERE orders.user_id = %s
+""")
+        # print(user.email)
+        val = (user_id, )
+        db.execute(order_query, val)
+        result = db.fetchall()
+        # print(result)
+        if result:
+            return result
+        else:
+            return {}
+    except Exception as e:
+        logging.error("Error when get user order: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+def create_db_user_img_table():
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        db.execute("USE taipei_day_trip")
+        create_table_query = """
+            CREATE TABLE IF NOT EXISTS user_img(
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                user_id INT,
+                url TEXT,
+                Foreign Key(user_id) References users(id)
+            )
+"""
+        db.execute(create_table_query)
+    except Exception as e:
+        logging.error("Error when creating contact table: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+create_db_user_img_table()
+
+def check_img_exist(user_id):
+    db_connection = get_db_connection()
+    db = db_connection.cursor(dictionary = True)
+    img_query = ("SELECT * FROM user_img where user_id = %s")
+    val = (user_id, )
+    db.execute(img_query, val)
+    return db.fetchall()
+
+
+def update_db_user_img(user_id, img_url):
+    print("ok")
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        img_exist = check_img_exist(user_id)
+        if img_exist:
+            img_query = ("UPDATE user_img SET url = %s WHERE user_id = %s")
+        else:
+            img_query = ("INSERT INTO user_img(url, user_id) VALUES(%s, %s)")
+        val = (img_url, user_id)
+        db.execute(img_query, val)
+        db_connection.commit()
+    except Exception as e:
+        logging.error("Error when create user img: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
+def get_db_user_img(user_id):
+    try:
+        db_connection = get_db_connection()
+        db = db_connection.cursor(dictionary = True)
+        img_query = ("SELECT * FROM user_img WHERE user_id = %s")
+        val = (user_id, )
+        db.execute(img_query, val)
+        return db.fetchone()
+    except Exception as e:
+        logging.error("Error when create user: %s", e, exc_info=True)
+        return {}
+    finally:
+        db.close()
+        db_connection.close()
+
