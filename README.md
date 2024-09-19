@@ -31,5 +31,5 @@ Taipei Day Trip is a full-stack e-commerce platform designed to provide tourists
   - S3
   - Elasticache
   - RDS
-  - Cloudfront
+  - CloudFront
   - Load Balancer
