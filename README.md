@@ -1,7 +1,7 @@
 # Taipei Day Trip
 Taipei Day Trip is a full-stack e-commerce platform designed to provide tourists with an easy and efficient way to explore Taipei's attractions. The website allows visitors to manage bookings, and securely handle payments. With features that encourage community interaction, Taipei Day Trip aims to enhance the overall travel experience for tourists.
 
-![mainVisual](images/README/mainVisual.png)
+![mainVisual](static/images/README/mainVisual.png)
 # Frontend Technique
 - **JavaScript (ES6+)**
 
