@@ -564,6 +564,7 @@ async function connectWebSocket() {
   socket.onopen = function (event) {
     console.log("WebSocket connection opened:", event);
     socket.send(JSON.stringify({ type: "get_booking" }));
+    console.log("Sent get_booking message to server");
     startHeartbeat();
   };
 

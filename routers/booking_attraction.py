@@ -12,7 +12,7 @@ import logging
 from dotenv import load_dotenv
 import os
 import redis
-import asyncio
+
 
 load_dotenv(dotenv_path='../.env')
 
@@ -81,7 +81,10 @@ websocket_queue = {}
 @router.websocket("/ws/booking/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await websocket.accept()
-    websocket_queue[user_id] = websocket
+    # 將新的 WebSocket 連接加入該用戶的連接列表中
+    if user_id not in websocket_queue:
+        websocket_queue[user_id] = []
+    websocket_queue[user_id].append(websocket)
     try:
         while True:
             message = await websocket.receive_text()
@@ -89,8 +92,8 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             data = json.loads(message)
             if data.get("type") == "heartbeat":
                 await websocket.send_json({"type": "heartbeat_ack"})
-            elif data:
-                await websocket_queue[user_id].send_json({"action": "refresh_booking"})
+            elif data.get("type") == "get_booking":
+                await websocket.send_json({"action": "refresh_booking"})
     except WebSocketDisconnect:
         del websocket_queue[user_id]
         print("ws disconnect")
@@ -102,11 +105,16 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
 
 async def notify_booking_update(user_id: str):
     if user_id in websocket_queue:
-        try:
-            await websocket_queue[user_id].send_json({"action": "refresh_booking"})
-            print(f"Sent refresh_booking message to user: {user_id}")
-        except Exception as e:
-            print(f"Error sending WebSocket message: {e}")
+        for websocket in websocket_queue[user_id]:
+            try:
+                # 發送消息給該用戶的每個 WebSocket 連接
+                await websocket.send_json({"action": "refresh_booking"})
+                print(f"Sent refresh_booking message to user: {user_id}")
+            except Exception as e:
+                print(f"Error sending WebSocket message: {e}")
+                websocket_queue[user_id].remove(websocket)
+    else:
+        print(f"User {user_id} not in websocket_queue")
 
 @router.get("/api/booking")
 async def get_user_booking(token: str = Depends(oauth2_scheme)):
